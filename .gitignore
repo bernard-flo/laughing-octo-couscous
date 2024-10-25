@@ -31,3 +31,6 @@ build
 
 # Ignore IDE files
 .idea/
+
+# Ignore Kotlin files
+.kotlin/
