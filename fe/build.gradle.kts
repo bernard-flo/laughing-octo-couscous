@@ -19,6 +19,7 @@ kotlin {
             implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom")
             implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
             implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-material")
+            implementation(npm("@stomp/stompjs", "7.0.0"))
         }
 
     }
