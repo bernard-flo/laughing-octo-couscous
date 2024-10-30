@@ -1,52 +1,37 @@
 package be.controller
 
-import be.configuration.WebSocketClosedEvent
-import be.configuration.WebSocketEstablishedEvent
-import org.springframework.context.event.EventListener
+import be.domain.player.PlayerEnter
+import be.domain.player.PlayerEnterResult
+import be.domain.player.PlayerName
+import be.domain.player.SessionId
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.handler.annotation.SendTo
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor
-import org.springframework.messaging.simp.SimpMessageSendingOperations
-import org.springframework.messaging.simp.SimpMessageType
+import org.springframework.messaging.simp.annotation.SendToUser
 import org.springframework.stereotype.Controller
-import shared.Greeting
-import shared.HelloMessage
+import shared.message.PlayerEnterMessage
+import shared.message.PlayerEnterResultMessage
 
 
 @Controller
 private class BeController(
-    private val messagingTemplate: SimpMessageSendingOperations,
+    private val playerEnter: PlayerEnter,
 ) {
 
-    @SendTo("/topic/reply")
-    @MessageMapping("/hello")
-    fun greeting(
-        message: HelloMessage,
+    @SendToUser("/topic/player/enter/result")
+    @MessageMapping("/player/enter")
+    fun playerEnterApi(
         @Header("simpSessionId") sessionId: String,
-    ): Greeting {
+        playerEnterMessage: PlayerEnterMessage,
+    ): PlayerEnterResultMessage {
 
-        messagingTemplate.convertAndSendToUser(
-            sessionId,
-            "/topic/reply",
-            Greeting("Hello"),
-            SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE).let {
-                it.sessionId = sessionId
-                it.messageHeaders
-            },
+        val result = playerEnter(
+            sessionId = SessionId(sessionId),
+            playerName = PlayerName(playerEnterMessage.playerName),
         )
 
-        return Greeting("Hello, ${message.name}(${sessionId})!")
-    }
-
-    @EventListener
-    fun webSocketEstablished(event: WebSocketEstablishedEvent) {
-        println("Web Socket Established: ${event.sessionId}")
-    }
-
-    @EventListener
-    fun webSocketClosed(event: WebSocketClosedEvent) {
-        println("Web Socket Closed: ${event.sessionId}")
+        return PlayerEnterResultMessage(
+            success = result is PlayerEnterResult.Success,
+        )
     }
 
 }
