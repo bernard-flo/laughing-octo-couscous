@@ -1,33 +1,26 @@
 package fe
 
-import fe.client.player.PlayerClient
-import mui.material.Button
-import mui.material.ButtonVariant
 import react.FC
 import react.Props
-import react.dom.html.ReactHTML.div
-import react.useRef
-import react.useState
+import react.create
+import react.router.RouteObject
+import react.router.dom.RouterProvider
+import react.router.dom.createBrowserRouter
 
-val App: FC<Props> = FC<Props> {
+internal val App = FC<Props> {
 
-    var entered by useState(false)
-
-    val playerClientRef = useRef(
-        PlayerClient(
-            onEntered = { entered = true },
+    RouterProvider {
+        router = createBrowserRouter(
+            arrayOf(
+                RouteObject(
+                    path = "/",
+                    element = Player.create(),
+                ),
+                RouteObject(
+                    path = "/presenter",
+                    element = Presenter.create(),
+                ),
+            )
         )
-    )
-
-    div {
-        div {
-            +entered.toString()
-        }
-        Button {
-            variant = ButtonVariant.contained
-            onClick = { playerClientRef.current!!.enter("Bernard") }
-            +"Button"
-        }
     }
-
 }
