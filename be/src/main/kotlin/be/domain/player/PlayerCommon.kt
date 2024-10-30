@@ -1,13 +1,11 @@
 package be.domain.player
 
+import be.domain.SessionId
+
 
 data class PlayerSession(
     val sessionId: SessionId,
     val playerName: PlayerName,
-)
-
-data class SessionId(
-    val value: String,
 )
 
 data class PlayerName(

@@ -1,9 +1,9 @@
 package be.controller
 
+import be.domain.SessionId
 import be.domain.player.PlayerEnter
 import be.domain.player.PlayerEnterResult
 import be.domain.player.PlayerName
-import be.domain.player.SessionId
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.annotation.SendToUser
@@ -13,7 +13,7 @@ import shared.message.PlayerEnterResultMessage
 
 
 @Controller
-private class BeController(
+private class PlayerController(
     private val playerEnter: PlayerEnter,
 ) {
 

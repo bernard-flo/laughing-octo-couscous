@@ -1,6 +1,6 @@
 package fe
 
-import fe.client.player.PlayerClient
+import fe.client.presenter.PresenterClient
 import mui.material.Button
 import mui.material.ButtonVariant
 import react.FC
@@ -13,8 +13,8 @@ internal val Presenter = FC<Props> {
 
     var entered by useState(false)
 
-    val playerClientRef = useRef(
-        PlayerClient(
+    val presenterClientRef = useRef(
+        PresenterClient(
             onEntered = { entered = true },
         )
     )
@@ -26,7 +26,7 @@ internal val Presenter = FC<Props> {
         }
         Button {
             variant = ButtonVariant.contained
-            onClick = { playerClientRef.current!!.enter("Bernard") }
+            onClick = { presenterClientRef.current!!.enter("Bernard") }
             +"Button"
         }
     }
