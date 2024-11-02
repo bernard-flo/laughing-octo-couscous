@@ -8,6 +8,7 @@ import mui.material.TextField
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import react.dom.onChange
 import react.useRef
 import react.useState
 import shared.domain.game.GameState
@@ -112,6 +113,10 @@ private external interface PlayerLoginComponentProps : Props {
 
 private val PlayerLoginComponent = FC<PlayerLoginComponentProps> { props ->
 
+    var playerName by useState<String>("")
+
+    val doClientEnter = { props.playerClient.enter(playerName) }
+
     div {
         div {
             +"Player Login"
@@ -119,12 +124,14 @@ private val PlayerLoginComponent = FC<PlayerLoginComponentProps> { props ->
         div {
             TextField {
                 variant = FormControlVariant.filled
+                onChange = { playerName = it.target.asDynamic().value }
+                onKeyUp = { if (it.key == "Enter") doClientEnter() }
             }
         }
         div {
             Button {
                 variant = ButtonVariant.contained
-                onClick = { props.playerClient.enter("Bernard") }
+                onClick = { doClientEnter() }
                 +"Login"
             }
         }

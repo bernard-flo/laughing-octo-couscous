@@ -9,6 +9,8 @@ external class Client(
     var onStompError: (IFrame) -> Unit
     var onWebSocketError: (Any) -> Unit
 
+    val active: Boolean
+
     fun activate()
     fun publish(params: IPublishParams)
     fun subscribe(destination: String, callback: (IMessage) -> Unit)

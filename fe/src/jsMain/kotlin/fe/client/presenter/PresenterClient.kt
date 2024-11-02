@@ -2,6 +2,7 @@ package fe.client.presenter
 
 import fe.client.createStompClient
 import fe.ext.stompjs.Client
+import fe.ext.stompjs.IFrame
 import fe.ext.stompjs.IMessage
 import fe.ext.stompjs.PublishParams
 import kotlinx.serialization.encodeToString
@@ -24,34 +25,15 @@ class PresenterClient(
 
     fun enter(password: String) {
 
-        stompClient.onConnect = {
-            console.log("connected")
-            stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
-            stompClient.subscribe("/user/topic/presenter/getLeaderboard/result", this::callbackGetLeaderboardResult)
+        if (stompClient.active) {
             doEnter(password)
+        } else {
+            stompClient.onConnect = createOnConnect(password)
+            stompClient.activate()
         }
-
-        stompClient.activate()
     }
 
     private fun doEnter(password: String) {
-
-        stompClient.subscribe("/user/topic/presenter/enter/result") { message ->
-
-            val result = Json.decodeFromString<PresenterEnterResult>(message.body)
-            when (result) {
-
-                PresenterEnterResult.Success -> {
-                    console.log("enter succeeded")
-                    onEntered()
-                    doGetLeaderboard()
-                }
-
-                PresenterEnterResult.Fail -> {
-                    console.log("enter failed")
-                }
-            }
-        }
 
         stompClient.publish(
             PublishParams(
@@ -73,6 +55,36 @@ class PresenterClient(
                 body = null,
             )
         )
+    }
+
+    private fun createOnConnect(password: String): (IFrame) -> Unit {
+
+        return {
+            console.log("connected")
+
+            stompClient.subscribe("/user/topic/presenter/enter/result", this::callbackPlayerEnterResult)
+            stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
+            stompClient.subscribe("/user/topic/presenter/getLeaderboard/result", this::callbackGetLeaderboardResult)
+
+            doEnter(password)
+        }
+    }
+
+    private fun callbackPlayerEnterResult(message: IMessage) {
+
+        val result = Json.decodeFromString<PresenterEnterResult>(message.body)
+        when (result) {
+
+            PresenterEnterResult.Success -> {
+                console.log("enter succeeded")
+                onEntered()
+                doGetLeaderboard()
+            }
+
+            PresenterEnterResult.Fail -> {
+                console.log("enter failed")
+            }
+        }
     }
 
     private fun callbackGameStateUpdated(message: IMessage) {

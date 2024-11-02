@@ -2,6 +2,7 @@ package fe.client.player
 
 import fe.client.createStompClient
 import fe.ext.stompjs.Client
+import fe.ext.stompjs.IFrame
 import fe.ext.stompjs.IMessage
 import fe.ext.stompjs.PublishParams
 import kotlinx.serialization.encodeToString
@@ -25,14 +26,12 @@ class PlayerClient(
 
     fun enter(playerName: String) {
 
-        stompClient.onConnect = {
-            console.log("connected")
-            stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
-            stompClient.subscribe("/user/topic/player/registerAnswer/result", this::callbackRegisterAnswerResult)
+        if (stompClient.active) {
             doEnter(playerName)
+        } else {
+            stompClient.onConnect = createOnConnect(playerName)
+            stompClient.activate()
         }
-
-        stompClient.activate()
     }
 
     fun registerAnswer(answerValue: String) {
@@ -51,22 +50,6 @@ class PlayerClient(
 
     private fun doEnter(playerName: String) {
 
-        stompClient.subscribe("/user/topic/player/enter/result") { message ->
-
-            val result = Json.decodeFromString<PlayerEnterResult>(message.body)
-            when (result) {
-
-                is PlayerEnterResult.Success -> {
-                    console.log("enter succeeded")
-                    onEntered(result)
-                }
-
-                is PlayerEnterResult.Fail -> {
-                    console.log("enter failed")
-                }
-            }
-        }
-
         stompClient.publish(
             PublishParams(
                 destination = "/app/player/enter",
@@ -77,6 +60,35 @@ class PlayerClient(
                 )
             )
         )
+    }
+
+    private fun createOnConnect(playerName: String): (IFrame) -> Unit {
+
+        return {
+            console.log("connected")
+
+            stompClient.subscribe("/user/topic/player/enter/result", this::callbackPlayerEnterResult)
+            stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
+            stompClient.subscribe("/user/topic/player/registerAnswer/result", this::callbackRegisterAnswerResult)
+
+            doEnter(playerName)
+        }
+    }
+
+    private fun callbackPlayerEnterResult(message: IMessage) {
+
+        val result = Json.decodeFromString<PlayerEnterResult>(message.body)
+        when (result) {
+
+            is PlayerEnterResult.Success -> {
+                console.log("enter succeeded")
+                onEntered(result)
+            }
+
+            is PlayerEnterResult.Fail -> {
+                console.log("enter failed")
+            }
+        }
     }
 
     private fun callbackGameStateUpdated(message: IMessage) {

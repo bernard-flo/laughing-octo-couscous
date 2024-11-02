@@ -8,9 +8,11 @@ import mui.material.TextField
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import react.dom.onChange
 import react.useRef
 import react.useState
 import shared.domain.game.Leaderboard
+import web.html.InputType
 
 internal val PresenterPage = FC<Props> {
 
@@ -70,19 +72,26 @@ private external interface PresenterLoginComponentProps : Props {
 
 private val PresenterLoginComponent = FC<PresenterLoginComponentProps> { props ->
 
+    var password by useState<String>("")
+
+    val doClientEnter = { props.presenterClient.enter(password) }
+
     div {
         div {
             +"Presenter Login"
         }
         div {
             TextField {
+                type = InputType.password
                 variant = FormControlVariant.filled
+                onChange = { password = it.target.asDynamic().value }
+                onKeyUp = { if (it.key == "Enter") doClientEnter() }
             }
         }
         div {
             Button {
                 variant = ButtonVariant.contained
-                onClick = { props.presenterClient.enter("Bernard") }
+                onClick = { doClientEnter() }
                 +"Login"
             }
         }

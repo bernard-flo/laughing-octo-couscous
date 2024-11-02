@@ -2,6 +2,7 @@ package fe.client.manager
 
 import fe.client.createStompClient
 import fe.ext.stompjs.Client
+import fe.ext.stompjs.IFrame
 import fe.ext.stompjs.IMessage
 import fe.ext.stompjs.PublishParams
 import kotlinx.serialization.encodeToString
@@ -21,13 +22,12 @@ class ManagerClient(
 
     fun enter(password: String) {
 
-        stompClient.onConnect = {
-            console.log("connected")
-            stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
+        if (stompClient.active) {
             doEnter(password)
+        } else {
+            stompClient.onConnect = createOnConnect(password)
+            stompClient.activate()
         }
-
-        stompClient.activate()
     }
 
     fun toAnsweringState() {
@@ -62,22 +62,6 @@ class ManagerClient(
 
     private fun doEnter(password: String) {
 
-        stompClient.subscribe("/user/topic/manager/enter/result") { message ->
-
-            val result = Json.decodeFromString<ManagerEnterResult>(message.body)
-            when (result) {
-
-                is ManagerEnterResult.Success -> {
-                    console.log("enter succeeded")
-                    onEntered(result)
-                }
-
-                is ManagerEnterResult.Fail -> {
-                    console.log("enter failed")
-                }
-            }
-        }
-
         stompClient.publish(
             PublishParams(
                 destination = "/app/manager/enter",
@@ -88,6 +72,34 @@ class ManagerClient(
                 )
             )
         )
+    }
+
+    private fun createOnConnect(password: String): (IFrame) -> Unit {
+
+        return {
+            console.log("connected")
+
+            stompClient.subscribe("/user/topic/manager/enter/result", this::callbackPresenterEnterResult)
+            stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
+
+            doEnter(password)
+        }
+    }
+
+    private fun callbackPresenterEnterResult(message: IMessage) {
+
+        val result = Json.decodeFromString<ManagerEnterResult>(message.body)
+        when (result) {
+
+            is ManagerEnterResult.Success -> {
+                console.log("enter succeeded")
+                onEntered(result)
+            }
+
+            is ManagerEnterResult.Fail -> {
+                console.log("enter failed")
+            }
+        }
     }
 
     private fun callbackGameStateUpdated(message: IMessage) {
