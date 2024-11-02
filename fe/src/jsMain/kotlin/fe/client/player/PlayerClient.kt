@@ -1,8 +1,8 @@
 package fe.client.player
 
+import fe.client.createStompClient
 import fe.ext.stompjs.Client
 import fe.ext.stompjs.PublishParams
-import fe.ext.stompjs.StompConfig
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import shared.domain.player.PlayerEnterCommandPayload
@@ -13,15 +13,7 @@ class PlayerClient(
     private val onEntered: () -> Unit,
 ) {
 
-    private val stompClient: Client
-
-    init {
-        stompClient = Client(
-            StompConfig().apply {
-                brokerURL = "ws://localhost:9080/stomp"
-            }
-        )
-    }
+    private val stompClient: Client = createStompClient()
 
     fun enter(playerName: String) {
 
