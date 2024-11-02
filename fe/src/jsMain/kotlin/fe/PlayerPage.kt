@@ -31,6 +31,9 @@ internal val PlayerPage = FC<Props> {
             },
             onAnswerRegistered = {
                 registeredAnswer = it.registeredAnswer.value
+            },
+            onRegisterAnswerFailed = {
+                registeredAnswer = "(잠시 후에 입력해주세요)"
             }
         )
     )
@@ -62,6 +65,10 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
     val quizNo = props.currentGameStateInfo.quizIndex.value + 1
 
+    var answer by useState<String>("")
+
+    val doClientRegisterAnswer = { props.playerClient.registerAnswer(answer) }
+
     div {
         div {
             +"${quizNo}번 문제"
@@ -89,17 +96,19 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
         }
 
         div {
-            +"내입력: ${props.registeredAnswer ?: ""}"
+            +"내 답안: ${props.registeredAnswer ?: ""}"
         }
         div {
             TextField {
                 variant = FormControlVariant.filled
+                onChange = { answer = it.target.asDynamic().value }
+                onKeyUp = { if (it.key == "Enter") doClientRegisterAnswer() }
             }
         }
         div {
             Button {
                 variant = ButtonVariant.contained
-                onClick = { props.playerClient.registerAnswer("정답!!") }
+                onClick = { doClientRegisterAnswer() }
                 +"정답 보내기"
             }
         }

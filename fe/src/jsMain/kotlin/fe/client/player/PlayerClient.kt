@@ -20,6 +20,7 @@ class PlayerClient(
     private val onEntered: (PlayerEnterResult.Success) -> Unit,
     private val onGameStateUpdated: (GameStateUpdated) -> Unit,
     private val onAnswerRegistered: (PlayerRegisterAnswerResult.Success) -> Unit,
+    private val onRegisterAnswerFailed: () -> Unit,
 ) {
 
     private val stompClient: Client = createStompClient()
@@ -109,6 +110,7 @@ class PlayerClient(
 
             is PlayerRegisterAnswerResult.Fail -> {
                 console.log("registerAnswer failed")
+                onRegisterAnswerFailed()
             }
         }
     }
