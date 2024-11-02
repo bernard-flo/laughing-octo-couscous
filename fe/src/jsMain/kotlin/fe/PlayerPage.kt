@@ -9,7 +9,7 @@ import react.dom.html.ReactHTML.div
 import react.useRef
 import react.useState
 
-internal val Player = FC<Props> {
+internal val PlayerPage = FC<Props> {
 
     var entered by useState(false)
 

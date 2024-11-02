@@ -14,15 +14,15 @@ internal val App = FC<Props> {
             arrayOf(
                 RouteObject(
                     path = "/",
-                    element = Player.create(),
+                    element = PlayerPage.create(),
                 ),
                 RouteObject(
                     path = "/manager",
-                    element = Manager.create(),
+                    element = ManagerPage.create(),
                 ),
                 RouteObject(
                     path = "/presenter",
-                    element = Presenter.create(),
+                    element = PresenterPage.create(),
                 ),
             )
         )

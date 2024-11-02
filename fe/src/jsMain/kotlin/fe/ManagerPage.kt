@@ -1,6 +1,6 @@
 package fe
 
-import fe.client.presenter.PresenterClient
+import fe.client.manager.ManagerClient
 import mui.material.Button
 import mui.material.ButtonVariant
 import react.FC
@@ -9,24 +9,24 @@ import react.dom.html.ReactHTML.div
 import react.useRef
 import react.useState
 
-internal val Presenter = FC<Props> {
+internal val ManagerPage = FC<Props> {
 
     var entered by useState(false)
 
-    val presenterClientRef = useRef(
-        PresenterClient(
+    val managerClientRef = useRef(
+        ManagerClient(
             onEntered = { entered = true },
         )
     )
 
     div {
-        +"Presenter"
+        +"Manager"
         div {
             +entered.toString()
         }
         Button {
             variant = ButtonVariant.contained
-            onClick = { presenterClientRef.current!!.enter("Bernard") }
+            onClick = { managerClientRef.current!!.enter("Bernard") }
             +"Button"
         }
     }
