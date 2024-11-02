@@ -1,6 +1,6 @@
 package be.domain.presenter
 
-import be.domain.SessionId
+import be.domain.common.SessionId
 import org.springframework.stereotype.Service
 import shared.domain.presenter.PresenterEnterCommandPayload
 import shared.domain.presenter.PresenterEnterResult

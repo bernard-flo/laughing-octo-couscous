@@ -1,6 +1,6 @@
 package be.domain.player
 
-import be.domain.SessionId
+import be.domain.common.SessionId
 import org.springframework.stereotype.Service
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult

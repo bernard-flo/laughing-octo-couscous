@@ -1,8 +1,9 @@
 package be.domain.presenter
 
-import be.domain.SessionId
+import be.domain.common.Session
+import be.domain.common.SessionId
 
 
 data class PresenterSession(
-    val sessionId: SessionId,
-)
+    override val sessionId: SessionId,
+) : Session

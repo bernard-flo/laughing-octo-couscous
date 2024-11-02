@@ -1,6 +1,6 @@
 package be.controller
 
-import be.domain.SessionId
+import be.domain.common.SessionId
 import be.domain.player.PlayerEnter
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
