@@ -3,8 +3,11 @@ package fe.client.presenter
 import fe.ext.stompjs.Client
 import fe.ext.stompjs.PublishParams
 import fe.ext.stompjs.StompConfig
-import shared.message.PresenterEnterMessage
-import shared.message.PresenterEnterResultMessage
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import shared.domain.presenter.PresenterEnterCommandPayload
+import shared.domain.presenter.PresenterEnterResult
+import shared.domain.presenter.PresenterPassword
 
 class PresenterClient(
     private val onEntered: () -> Unit,
@@ -35,21 +38,26 @@ class PresenterClient(
 
         stompClient.subscribe("/user/topic/presenter/enter/result") { message ->
 
-            val result = JSON.parse<PresenterEnterResultMessage>(message.body)
-            if (result.success) {
-                console.log("enter succeeded")
-                onEntered()
-            } else {
-                console.log("enter failed")
+            val result = Json.decodeFromString<PresenterEnterResult>(message.body)
+            when (result) {
+
+                PresenterEnterResult.Success -> {
+                    console.log("enter succeeded")
+                    onEntered()
+                }
+
+                PresenterEnterResult.Fail -> {
+                    console.log("enter failed")
+                }
             }
         }
 
         stompClient.publish(
             PublishParams(
                 destination = "/app/presenter/enter",
-                body = JSON.stringify(
-                    PresenterEnterMessage(
-                        password = password,
+                body = Json.encodeToString(
+                    PresenterEnterCommandPayload(
+                        password = PresenterPassword(password),
                     )
                 )
             )

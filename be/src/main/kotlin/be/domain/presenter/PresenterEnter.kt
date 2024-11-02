@@ -2,6 +2,8 @@ package be.domain.presenter
 
 import be.domain.SessionId
 import org.springframework.stereotype.Service
+import shared.domain.presenter.PresenterEnterCommandPayload
+import shared.domain.presenter.PresenterEnterResult
 
 @Service
 class PresenterEnter(
@@ -10,7 +12,7 @@ class PresenterEnter(
 
     operator fun invoke(
         sessionId: SessionId,
-        presenterPassword: PresenterPassword,
+        presenterEnterCommandPayload: PresenterEnterCommandPayload,
     ): PresenterEnterResult {
 
         val presenterSession = PresenterSession(
@@ -21,9 +23,4 @@ class PresenterEnter(
         return PresenterEnterResult.Success
     }
 
-}
-
-sealed interface PresenterEnterResult {
-    data object Success : PresenterEnterResult
-    data object Fail : PresenterEnterResult
 }

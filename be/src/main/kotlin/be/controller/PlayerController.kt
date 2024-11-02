@@ -2,14 +2,12 @@ package be.controller
 
 import be.domain.SessionId
 import be.domain.player.PlayerEnter
-import be.domain.player.PlayerEnterResult
-import be.domain.player.PlayerName
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.annotation.SendToUser
 import org.springframework.stereotype.Controller
-import shared.message.PlayerEnterMessage
-import shared.message.PlayerEnterResultMessage
+import shared.domain.player.PlayerEnterCommandPayload
+import shared.domain.player.PlayerEnterResult
 
 
 @Controller
@@ -21,16 +19,12 @@ private class PlayerController(
     @MessageMapping("/player/enter")
     fun playerEnterApi(
         @Header("simpSessionId") sessionId: String,
-        playerEnterMessage: PlayerEnterMessage,
-    ): PlayerEnterResultMessage {
+        playerEnterCommandPayload: PlayerEnterCommandPayload,
+    ): PlayerEnterResult {
 
-        val result = playerEnter(
+        return playerEnter(
             sessionId = SessionId(sessionId),
-            playerName = PlayerName(playerEnterMessage.playerName),
-        )
-
-        return PlayerEnterResultMessage(
-            success = result is PlayerEnterResult.Success,
+            playerEnterCommandPayload = playerEnterCommandPayload,
         )
     }
 

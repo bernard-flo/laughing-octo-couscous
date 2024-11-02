@@ -2,6 +2,8 @@ package be.domain.player
 
 import be.domain.SessionId
 import org.springframework.stereotype.Service
+import shared.domain.player.PlayerEnterCommandPayload
+import shared.domain.player.PlayerEnterResult
 
 @Service
 class PlayerEnter(
@@ -10,21 +12,16 @@ class PlayerEnter(
 
     operator fun invoke(
         sessionId: SessionId,
-        playerName: PlayerName,
+        playerEnterCommandPayload: PlayerEnterCommandPayload,
     ): PlayerEnterResult {
 
         val playerSession = PlayerSession(
             sessionId = sessionId,
-            playerName = playerName,
+            playerName = playerEnterCommandPayload.playerName,
         )
         playerSessionRegistry.add(playerSession)
 
         return PlayerEnterResult.Success
     }
 
-}
-
-sealed interface PlayerEnterResult {
-    data object Success : PlayerEnterResult
-    data object Fail : PlayerEnterResult
 }

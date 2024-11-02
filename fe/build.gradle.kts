@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
 plugins {
     id("buildlogic.kotlin-common-conventions")
     kotlin("multiplatform")
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 kotlin {
@@ -21,6 +22,8 @@ kotlin {
             implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
             implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-material")
             implementation(npm("@stomp/stompjs", "7.0.0"))
+
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
         }
 
     }

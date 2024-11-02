@@ -3,8 +3,11 @@ package fe.client.player
 import fe.ext.stompjs.Client
 import fe.ext.stompjs.PublishParams
 import fe.ext.stompjs.StompConfig
-import shared.message.PlayerEnterMessage
-import shared.message.PlayerEnterResultMessage
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import shared.domain.player.PlayerEnterCommandPayload
+import shared.domain.player.PlayerEnterResult
+import shared.domain.player.PlayerName
 
 class PlayerClient(
     private val onEntered: () -> Unit,
@@ -35,21 +38,26 @@ class PlayerClient(
 
         stompClient.subscribe("/user/topic/player/enter/result") { message ->
 
-            val result = JSON.parse<PlayerEnterResultMessage>(message.body)
-            if (result.success) {
-                console.log("enter succeeded")
-                onEntered()
-            } else {
-                console.log("enter failed")
+            val result = Json.decodeFromString<PlayerEnterResult>(message.body)
+            when (result) {
+
+                is PlayerEnterResult.Success -> {
+                    console.log("enter succeeded")
+                    onEntered()
+                }
+
+                is PlayerEnterResult.Fail -> {
+                    console.log("enter failed")
+                }
             }
         }
 
         stompClient.publish(
             PublishParams(
                 destination = "/app/player/enter",
-                body = JSON.stringify(
-                    PlayerEnterMessage(
-                        playerName = playerName,
+                body = Json.encodeToString(
+                    PlayerEnterCommandPayload(
+                        playerName = PlayerName(playerName)
                     )
                 )
             )
