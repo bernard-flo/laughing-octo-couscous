@@ -4,18 +4,35 @@ import org.springframework.stereotype.Service
 import shared.domain.game.Answer
 import shared.domain.game.GameState
 import shared.domain.game.GameStateInfo
+import shared.domain.game.Leaderboard
+import shared.domain.game.LeaderboardItem
 import shared.domain.game.QuizIndex
+import shared.domain.game.Rank
+import shared.domain.game.Score
 import shared.domain.player.PlayerName
 
 @Service
 class Game {
 
+    private val quizList = listOf(
+        Quiz(Answer("A")),
+        Quiz(Answer("B")),
+        Quiz(Answer("C")),
+        Quiz(Answer("D")),
+        Quiz(Answer("E")),
+        Quiz(Answer("F")),
+        Quiz(Answer("G")),
+        Quiz(Answer("H")),
+    )
+
+    private val scoreMap = mutableMapOf<PlayerName, Score>()
+    private val leaderboard = mutableListOf<LeaderboardItem>()
     private val currentAnswerMap = mutableMapOf<PlayerName, Answer>()
 
     private var currentGameState = GameState.Ready
     private var currentQuizIndex = QuizIndex(0)
 
-    fun getGameStateInfo(): GameStateInfo {
+    fun getGameStateInfo(): GameStateInfo = synchronized(this) {
 
         return GameStateInfo(
             gameState = currentGameState,
@@ -23,31 +40,35 @@ class Game {
         )
     }
 
-    fun toAnsweringState() {
+    fun getLeaderboard(): Leaderboard = synchronized(this) {
+
+        return leaderboard
+    }
+
+    fun toAnsweringState() = synchronized(this) {
 
         check(currentGameState == GameState.Ready)
 
         currentGameState = GameState.Answering
     }
 
-    fun toAggregatedState() {
+    fun toAggregatedState() = synchronized(this) {
 
         check(currentGameState == GameState.Answering)
 
+        aggregate()
         currentGameState = GameState.Aggregated
     }
 
-    fun toNextQuiz() {
+    fun toNextQuiz() = synchronized(this) {
 
         check(currentGameState == GameState.Aggregated)
 
-        synchronized(this) {
-            currentQuizIndex = currentQuizIndex.createNext()
-            currentGameState = GameState.Ready
-        }
+        currentQuizIndex = currentQuizIndex.createNext()
+        currentGameState = GameState.Ready
     }
 
-    fun registerAnswer(playerName: PlayerName, answer: Answer): RegisterAnswerResult {
+    fun registerAnswer(playerName: PlayerName, answer: Answer): RegisterAnswerResult = synchronized(this) {
 
         if (currentGameState != GameState.Answering) {
             return RegisterAnswerResult.Fail
@@ -58,8 +79,49 @@ class Game {
         return RegisterAnswerResult.Success
     }
 
+    private fun aggregate() {
+
+        updateScoreMap()
+        updateLeaderboard()
+    }
+
+    private fun updateScoreMap() {
+
+        val quizAnswer = quizList.get(currentQuizIndex.value).answer
+
+        for ((playerName, playerAnswer) in currentAnswerMap) {
+            if (playerAnswer == quizAnswer) {
+                val prevScore = scoreMap[playerName] ?: Score(0)
+                val newScore = prevScore.createPlus(1)
+                scoreMap[playerName] = newScore
+            }
+        }
+
+        currentAnswerMap.clear()
+    }
+
+    private fun updateLeaderboard() {
+
+        leaderboard.clear()
+
+        val newList = scoreMap.entries
+            .sortedBy { (_, score) -> score.value }
+            .mapIndexed { index, (playerName, score) ->
+                LeaderboardItem(
+                    rank = Rank(index + 1),
+                    playerName = playerName,
+                    score = score,
+                )
+            }
+        leaderboard.addAll(newList)
+    }
+
 }
 
+
+data class Quiz(
+    val answer: Answer,
+)
 
 enum class RegisterAnswerResult {
     Success,
