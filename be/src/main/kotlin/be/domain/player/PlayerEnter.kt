@@ -1,6 +1,7 @@
 package be.domain.player
 
 import be.domain.common.SessionId
+import be.domain.game.Game
 import org.springframework.stereotype.Service
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult
@@ -8,6 +9,7 @@ import shared.domain.player.PlayerEnterResult
 @Service
 class PlayerEnter(
     private val playerSessionRegistry: PlayerSessionRegistry,
+    private val game: Game,
 ) {
 
     operator fun invoke(
@@ -21,7 +23,9 @@ class PlayerEnter(
         )
         playerSessionRegistry.add(playerSession)
 
-        return PlayerEnterResult.Success
+        return PlayerEnterResult.Success(
+            currentGameStateInfo = game.getGameStateInfo(),
+        )
     }
 
 }

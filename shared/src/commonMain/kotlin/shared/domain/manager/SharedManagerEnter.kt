@@ -4,6 +4,7 @@
 package shared.domain.manager
 
 import kotlinx.serialization.Serializable
+import shared.domain.game.GameStateInfo
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
@@ -17,7 +18,9 @@ data class ManagerEnterCommandPayload(
 sealed class ManagerEnterResult {
 
     @Serializable
-    data object Success : ManagerEnterResult()
+    data class Success(
+        val currentGameStateInfo: GameStateInfo,
+    ) : ManagerEnterResult()
 
     @Serializable
     data object Fail : ManagerEnterResult()

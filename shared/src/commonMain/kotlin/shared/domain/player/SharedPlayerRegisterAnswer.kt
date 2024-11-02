@@ -4,25 +4,25 @@
 package shared.domain.player
 
 import kotlinx.serialization.Serializable
-import shared.domain.game.GameStateInfo
+import shared.domain.game.Answer
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 
 
 @Serializable
-data class PlayerEnterCommandPayload(
-    val playerName: PlayerName,
+data class PlayerRegisterAnswerCommandPayload(
+    val answer: Answer,
 )
 
 @Serializable
-sealed class PlayerEnterResult {
+sealed class PlayerRegisterAnswerResult {
 
     @Serializable
     data class Success(
-        val currentGameStateInfo: GameStateInfo,
-    ) : PlayerEnterResult()
+        val registeredAnswer: Answer,
+    ) : PlayerRegisterAnswerResult()
 
     @Serializable
-    data object Fail : PlayerEnterResult()
+    data object Fail : PlayerRegisterAnswerResult()
 
 }

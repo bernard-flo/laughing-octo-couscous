@@ -2,15 +2,19 @@ package fe.client.manager
 
 import fe.client.createStompClient
 import fe.ext.stompjs.Client
+import fe.ext.stompjs.IMessage
 import fe.ext.stompjs.PublishParams
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import shared.domain.common.GameStateUpdated
 import shared.domain.manager.ManagerEnterCommandPayload
 import shared.domain.manager.ManagerEnterResult
 import shared.domain.manager.ManagerPassword
+import shared.stomp.TopicGameStateUpdated
 
 class ManagerClient(
-    private val onEntered: () -> Unit,
+    private val onEntered: (ManagerEnterResult.Success) -> Unit,
+    private val onGameStateUpdated: (GameStateUpdated) -> Unit,
 ) {
 
     private val stompClient: Client = createStompClient()
@@ -19,12 +23,42 @@ class ManagerClient(
 
         stompClient.onConnect = {
             console.log("connected")
+            stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
             doEnter(password)
         }
 
         stompClient.activate()
     }
 
+    fun toAnsweringState() {
+
+        stompClient.publish(
+            PublishParams(
+                destination = "/app/manager/toAnsweringState",
+                body = null,
+            )
+        )
+    }
+
+    fun toAggregatedState() {
+
+        stompClient.publish(
+            PublishParams(
+                destination = "/app/manager/toAggregatedState",
+                body = null,
+            )
+        )
+    }
+
+    fun toNextQuiz() {
+
+        stompClient.publish(
+            PublishParams(
+                destination = "/app/manager/toNextQuiz",
+                body = null,
+            )
+        )
+    }
 
     private fun doEnter(password: String) {
 
@@ -33,12 +67,12 @@ class ManagerClient(
             val result = Json.decodeFromString<ManagerEnterResult>(message.body)
             when (result) {
 
-                ManagerEnterResult.Success -> {
+                is ManagerEnterResult.Success -> {
                     console.log("enter succeeded")
-                    onEntered()
+                    onEntered(result)
                 }
 
-                ManagerEnterResult.Fail -> {
+                is ManagerEnterResult.Fail -> {
                     console.log("enter failed")
                 }
             }
@@ -54,6 +88,12 @@ class ManagerClient(
                 )
             )
         )
+    }
+
+    private fun callbackGameStateUpdated(message: IMessage) {
+
+        val gameStateUpdated = Json.decodeFromString<GameStateUpdated>(message.body)
+        onGameStateUpdated(gameStateUpdated)
     }
 
 }
