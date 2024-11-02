@@ -17,6 +17,10 @@ internal val App = FC<Props> {
                     element = Player.create(),
                 ),
                 RouteObject(
+                    path = "/manager",
+                    element = Manager.create(),
+                ),
+                RouteObject(
                     path = "/presenter",
                     element = Presenter.create(),
                 ),
