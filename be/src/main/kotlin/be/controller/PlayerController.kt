@@ -1,14 +1,18 @@
 package be.controller
 
 import be.domain.common.SessionId
+import be.domain.player.PlayerChat
 import be.domain.player.PlayerEnter
 import be.domain.player.PlayerGetQuizOutcome
 import be.domain.player.PlayerRegisterAnswer
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.messaging.simp.annotation.SendToUser
 import org.springframework.stereotype.Controller
+import shared.domain.common.ChatUpdated
 import shared.domain.game.PlayerQuizOutcome
+import shared.domain.player.PlayerChatCommandPayload
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult
 import shared.domain.player.PlayerRegisterAnswerCommandPayload
@@ -20,6 +24,7 @@ private class PlayerController(
     private val playerEnter: PlayerEnter,
     private val playerRegisterAnswer: PlayerRegisterAnswer,
     private val playerGetQuizOutcome: PlayerGetQuizOutcome,
+    private val playerChat: PlayerChat,
 ) {
 
     @SendToUser("/topic/player/enter/result")
@@ -56,6 +61,19 @@ private class PlayerController(
 
         return playerGetQuizOutcome(
             sessionId = SessionId(sessionId),
+        )
+    }
+
+    @SendTo("/topic/chatUpdated")
+    @MessageMapping("/player/chat")
+    fun playerChatApi(
+        @Header("simpSessionId") sessionId: String,
+        playerChatCommandPayload: PlayerChatCommandPayload,
+    ): ChatUpdated {
+
+        return playerChat(
+            sessionId = SessionId(sessionId),
+            payload = playerChatCommandPayload,
         )
     }
 

@@ -82,8 +82,15 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
     val isCorrect = props.quizOutcome?.type
 
     var answer by useState<String>("")
+    var chatMessage by useState<String>("")
 
     val doClientRegisterAnswer = { props.playerClient.registerAnswer(answer) }
+    val doClientChat = {
+        if (chatMessage.isNotBlank()) {
+            props.playerClient.chat(chatMessage)
+            chatMessage = ""
+        }
+    }
 
     div {
         div {
@@ -159,6 +166,21 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
                 variant = ButtonVariant.contained
                 onClick = { doClientRegisterAnswer() }
                 +"정답 보내기"
+            }
+        }
+        div {
+            TextField {
+                variant = FormControlVariant.filled
+                value = chatMessage
+                onChange = { chatMessage = it.target.asDynamic().value }
+                onKeyUp = { if (it.key == "Enter") doClientChat() }
+            }
+        }
+        div {
+            Button {
+                variant = ButtonVariant.contained
+                onClick = { doClientChat() }
+                +"채팅"
             }
         }
     }

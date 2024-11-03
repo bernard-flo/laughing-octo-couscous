@@ -7,10 +7,12 @@ import fe.ext.stompjs.IMessage
 import fe.ext.stompjs.PublishParams
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import shared.domain.common.ChatMessage
 import shared.domain.common.GameStateUpdated
 import shared.domain.game.Answer
 import shared.domain.game.GameState
 import shared.domain.game.PlayerQuizOutcome
+import shared.domain.player.PlayerChatCommandPayload
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult
 import shared.domain.player.PlayerName
@@ -49,6 +51,20 @@ class PlayerClient(
                         answer = Answer(answerValue),
                     )
                 )
+            )
+        )
+    }
+
+    fun chat(chatMessage: String) {
+
+        stompClient.publish(
+            PublishParams(
+                destination = "/app/player/chat",
+                body = Json.encodeToString(
+                    PlayerChatCommandPayload(
+                        chatMessage = ChatMessage(chatMessage),
+                    )
+                ),
             )
         )
     }

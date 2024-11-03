@@ -11,6 +11,7 @@ import react.dom.html.ReactHTML.div
 import react.dom.onChange
 import react.useRef
 import react.useState
+import shared.domain.common.ChatItem
 import shared.domain.game.Leaderboard
 import web.html.InputType
 
@@ -18,22 +19,34 @@ internal val PresenterPage = FC<Props> {
 
     var entered by useState(false)
     var leaderboard by useState<Leaderboard>(listOf())
+    var chatList by useState<List<ChatItem>>(listOf())
 
-    val presenterClientRef = useRef(
-        PresenterClient(
-            onEntered = {
-                entered = true
-            },
-            onLeaderboardUpdated = {
-                leaderboard = it
-            },
+    val presenterClientRef = {
+        val cachedChatList = mutableListOf<ChatItem>()
+        useRef(
+            PresenterClient(
+                onEntered = {
+                    entered = true
+                },
+                onLeaderboardUpdated = {
+                    leaderboard = it
+                },
+                onChatUpdated = {
+                    cachedChatList.add(it.chatItem)
+                    if (cachedChatList.size > 10) {
+                        cachedChatList.removeFirst()
+                    }
+                    chatList = cachedChatList.toList()
+                },
+            )
         )
-    )
+    }()
 
     div {
         if (entered) {
             PresenterGameComponent {
                 this.leaderboard = leaderboard
+                this.chatList = chatList
             }
         } else {
             PresenterLoginComponent {
@@ -47,6 +60,7 @@ internal val PresenterPage = FC<Props> {
 
 private external interface PresenterGameComponentProps : Props {
     var leaderboard: Leaderboard
+    var chatList: List<ChatItem>
 }
 
 private val PresenterGameComponent = FC<PresenterGameComponentProps> { props ->
@@ -60,6 +74,17 @@ private val PresenterGameComponent = FC<PresenterGameComponentProps> { props ->
 
             div {
                 +"${rankValue}등 ${playerNameValue} (${scoreValue}점)"
+            }
+        }
+    }
+    div {
+
+        for (chatItem in props.chatList) {
+            val playerNameValue = chatItem.playerName.value
+            val messageValue = chatItem.chatMessage.value
+
+            div {
+                +"${playerNameValue}: ${messageValue}"
             }
         }
     }
