@@ -1,12 +1,18 @@
 package fe
 
 import fe.client.player.PlayerClient
+import mui.material.Box
 import mui.material.Button
 import mui.material.ButtonVariant
 import mui.material.FormControlVariant
 import mui.material.TextField
+import mui.material.Typography
+import mui.material.styles.TypographyVariant
+import mui.system.sx
 import react.FC
 import react.Props
+import react.ReactNode
+import react.StateSetter
 import react.dom.html.ReactHTML.div
 import react.dom.onChange
 import react.useRef
@@ -15,11 +21,14 @@ import shared.domain.game.GameState
 import shared.domain.game.GameStateInfo
 import shared.domain.game.PlayerQuizOutcome
 import shared.domain.game.QuizOutcomeType
+import web.cssom.Display
+import web.cssom.JustifyContent
+import web.cssom.rem
 
 internal val PlayerPage = FC<Props> {
 
     var entered by useState(false)
-    var enterFailed by useState(false)
+    val (enterFailed, setEnterFailed) = useState(false)
     var currentGameStateInfo by useState<GameStateInfo?>(null)
     var registeredAnswer by useState<String?>(null)
     var quizOutcome by useState<PlayerQuizOutcome?>(null)
@@ -31,7 +40,7 @@ internal val PlayerPage = FC<Props> {
                 currentGameStateInfo = it.currentGameStateInfo
             },
             onEnterFailed = {
-                enterFailed = true
+                setEnterFailed(true)
             },
             onGameStateUpdated = {
                 currentGameStateInfo = it.gameStateInfo
@@ -60,6 +69,7 @@ internal val PlayerPage = FC<Props> {
             PlayerLoginComponent {
                 this.playerClient = playerClientRef.current!!
                 this.enterFailed = enterFailed
+                this.setEnterFailed = setEnterFailed
             }
         }
     }
@@ -190,6 +200,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 private external interface PlayerLoginComponentProps : Props {
     var playerClient: PlayerClient
     var enterFailed: Boolean
+    var setEnterFailed: StateSetter<Boolean>
 }
 
 private val PlayerLoginComponent = FC<PlayerLoginComponentProps> { props ->
@@ -198,28 +209,33 @@ private val PlayerLoginComponent = FC<PlayerLoginComponentProps> { props ->
 
     val doClientEnter = { props.playerClient.enter(playerName) }
 
-    div {
-        div {
-            +"Player Login"
+    Box {
+        sx {
+            display = Display.grid
+            justifyContent = JustifyContent.center
+            marginTop = 5.rem
+            gap = 2.rem
         }
-        div {
-            if (props.enterFailed) {
-                +"이름을 정확하게 입력해주세요"
-            }
+
+        Typography {
+            variant = TypographyVariant.h2
+            +"Townhall"
         }
-        div {
-            TextField {
-                variant = FormControlVariant.filled
-                onChange = { playerName = it.target.asDynamic().value }
-                onKeyUp = { if (it.key == "Enter") doClientEnter() }
+        TextField {
+            variant = FormControlVariant.outlined
+            label = ReactNode("영어 이름")
+            error = props.enterFailed
+            helperText = if (props.enterFailed) ReactNode("이름을 정확하게 입력해주세요") else null
+            onChange = {
+                playerName = it.target.asDynamic().value
+                props.setEnterFailed(false)
             }
+            onKeyUp = { if (it.key == "Enter") doClientEnter() }
         }
-        div {
-            Button {
-                variant = ButtonVariant.contained
-                onClick = { doClientEnter() }
-                +"Login"
-            }
+        Button {
+            variant = ButtonVariant.contained
+            onClick = { doClientEnter() }
+            +"Login"
         }
     }
 }
