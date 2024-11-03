@@ -135,7 +135,7 @@ class Game(
         leaderboard.clear()
 
         val newList = scoreMap.entries
-            .sortedBy { (_, score) -> score.value }
+            .sortedByDescending { (_, score) -> score.value }
             .mapIndexed { index, (playerName, score) ->
                 LeaderboardItem(
                     rank = Rank(index + 1),
