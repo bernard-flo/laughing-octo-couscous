@@ -20,6 +20,7 @@ import shared.stomp.TopicGameStateUpdated
 
 class PlayerClient(
     private val onEntered: (PlayerEnterResult.Success) -> Unit,
+    private val onEnterFailed: () -> Unit,
     private val onGameStateUpdated: (GameStateUpdated) -> Unit,
     private val onAnswerRegistered: (PlayerRegisterAnswerResult.Success) -> Unit,
     private val onRegisterAnswerFailed: () -> Unit,
@@ -102,6 +103,7 @@ class PlayerClient(
 
             is PlayerEnterResult.Fail -> {
                 console.log("enter failed")
+                onEnterFailed()
             }
         }
     }

@@ -19,6 +19,7 @@ import shared.domain.game.QuizOutcomeType
 internal val PlayerPage = FC<Props> {
 
     var entered by useState(false)
+    var enterFailed by useState(false)
     var currentGameStateInfo by useState<GameStateInfo?>(null)
     var registeredAnswer by useState<String?>(null)
     var quizOutcome by useState<PlayerQuizOutcome?>(null)
@@ -28,6 +29,9 @@ internal val PlayerPage = FC<Props> {
             onEntered = {
                 entered = true
                 currentGameStateInfo = it.currentGameStateInfo
+            },
+            onEnterFailed = {
+                enterFailed = true
             },
             onGameStateUpdated = {
                 currentGameStateInfo = it.gameStateInfo
@@ -55,6 +59,7 @@ internal val PlayerPage = FC<Props> {
         } else {
             PlayerLoginComponent {
                 this.playerClient = playerClientRef.current!!
+                this.enterFailed = enterFailed
             }
         }
     }
@@ -151,6 +156,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
 private external interface PlayerLoginComponentProps : Props {
     var playerClient: PlayerClient
+    var enterFailed: Boolean
 }
 
 private val PlayerLoginComponent = FC<PlayerLoginComponentProps> { props ->
@@ -162,6 +168,11 @@ private val PlayerLoginComponent = FC<PlayerLoginComponentProps> { props ->
     div {
         div {
             +"Player Login"
+        }
+        div {
+            if (props.enterFailed) {
+                +"이름을 정확하게 입력해주세요"
+            }
         }
         div {
             TextField {
