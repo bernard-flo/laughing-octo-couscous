@@ -13,12 +13,15 @@ import react.useRef
 import react.useState
 import shared.domain.game.GameState
 import shared.domain.game.GameStateInfo
+import shared.domain.game.PlayerQuizOutcome
+import shared.domain.game.QuizOutcomeType
 
 internal val PlayerPage = FC<Props> {
 
     var entered by useState(false)
     var currentGameStateInfo by useState<GameStateInfo?>(null)
     var registeredAnswer by useState<String?>(null)
+    var quizOutcome by useState<PlayerQuizOutcome?>(null)
 
     val playerClientRef = useRef(
         PlayerClient(
@@ -34,7 +37,10 @@ internal val PlayerPage = FC<Props> {
             },
             onRegisterAnswerFailed = {
                 registeredAnswer = "(잠시 후에 입력해주세요)"
-            }
+            },
+            onQuizOutcome = {
+                quizOutcome = it
+            },
         )
     )
 
@@ -44,6 +50,7 @@ internal val PlayerPage = FC<Props> {
                 this.playerClient = playerClientRef.current!!
                 this.currentGameStateInfo = currentGameStateInfo!!
                 this.registeredAnswer = registeredAnswer
+                this.quizOutcome = quizOutcome
             }
         } else {
             PlayerLoginComponent {
@@ -59,17 +66,23 @@ private external interface PlayerGameComponentProps : Props {
     var playerClient: PlayerClient
     var currentGameStateInfo: GameStateInfo
     var registeredAnswer: String?
+    var quizOutcome: PlayerQuizOutcome?
 }
 
 private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
     val quizNo = props.currentGameStateInfo.quizIndex.value + 1
+    val score = props.quizOutcome?.score?.value ?: 0
+    val isCorrect = props.quizOutcome?.type
 
     var answer by useState<String>("")
 
     val doClientRegisterAnswer = { props.playerClient.registerAnswer(answer) }
 
     div {
+        div {
+            +"내 점수: ${score}점"
+        }
         div {
             +"${quizNo}번 문제"
         }
@@ -88,9 +101,29 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
                 }
             }
 
-            GameState.Aggregated -> {
+            GameState.Answered -> {
                 div {
                     +"정답을 확인해 주세요"
+                }
+            }
+
+            GameState.Aggregated -> {
+                div {
+
+                    when (isCorrect) {
+
+                        QuizOutcomeType.Correct -> {
+                            +"정답입니다"
+                        }
+
+                        QuizOutcomeType.Incorrect -> {
+                            +"오답입니다"
+                        }
+
+                        null -> {
+                            +"-"
+                        }
+                    }
                 }
             }
         }

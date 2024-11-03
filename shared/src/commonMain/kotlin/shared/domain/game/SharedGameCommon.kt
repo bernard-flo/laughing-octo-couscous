@@ -13,6 +13,7 @@ import kotlin.js.JsExport
 enum class GameState {
     Ready,
     Answering,
+    Answered,
     Aggregated,
 }
 
@@ -21,6 +22,18 @@ data class GameStateInfo(
     val gameState: GameState,
     val quizIndex: QuizIndex,
 )
+
+@Serializable
+data class PlayerQuizOutcome(
+    val type: QuizOutcomeType,
+    val score: Score,
+)
+
+@Serializable
+enum class QuizOutcomeType {
+    Correct,
+    Incorrect,
+}
 
 @Serializable
 class QuizIndex(

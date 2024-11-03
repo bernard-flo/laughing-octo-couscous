@@ -40,6 +40,16 @@ class ManagerClient(
         )
     }
 
+    fun toAnsweredState() {
+
+        stompClient.publish(
+            PublishParams(
+                destination = "/app/manager/toAnsweredState",
+                body = null,
+            )
+        )
+    }
+
     fun toAggregatedState() {
 
         stompClient.publish(

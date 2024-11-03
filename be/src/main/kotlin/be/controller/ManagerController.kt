@@ -3,6 +3,7 @@ package be.controller
 import be.domain.common.SessionId
 import be.domain.manager.ManagerEnter
 import be.domain.manager.ManagerToAggregatedState
+import be.domain.manager.ManagerToAnsweredState
 import be.domain.manager.ManagerToAnsweringState
 import be.domain.manager.ManagerToNextQuiz
 import org.springframework.messaging.handler.annotation.Header
@@ -20,6 +21,7 @@ import shared.stomp.TopicGameStateUpdated
 private class ManagerController(
     private val managerEnter: ManagerEnter,
     private val managerToAnsweringState: ManagerToAnsweringState,
+    private val managerToAnsweredState: ManagerToAnsweredState,
     private val managerToAggregatedState: ManagerToAggregatedState,
     private val managerToNextQuiz: ManagerToNextQuiz,
 ) {
@@ -44,6 +46,17 @@ private class ManagerController(
     ): GameStateUpdated {
 
         return managerToAnsweringState(
+            sessionId = SessionId(sessionId),
+        )
+    }
+
+    @SendTo(TopicGameStateUpdated)
+    @MessageMapping("/manager/toAnsweredState")
+    fun managerToAnsweredStateApi(
+        @Header("simpSessionId") sessionId: String,
+    ): GameStateUpdated {
+
+        return managerToAnsweredState(
             sessionId = SessionId(sessionId),
         )
     }

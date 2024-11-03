@@ -78,8 +78,18 @@ private val ManagerGameComponent = FC<ManagerGameComponentProps> { props ->
                 div {
                     Button {
                         variant = ButtonVariant.contained
-                        onClick = { props.managerClient.toAggregatedState() }
+                        onClick = { props.managerClient.toAnsweredState() }
                         +"입력 마감!"
+                    }
+                }
+            }
+
+            GameState.Answered -> {
+                div {
+                    Button {
+                        variant = ButtonVariant.contained
+                        onClick = { props.managerClient.toAggregatedState() }
+                        +"랭킹 표시!"
                     }
                 }
             }

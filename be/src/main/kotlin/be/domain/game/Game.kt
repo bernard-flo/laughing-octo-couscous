@@ -6,7 +6,9 @@ import shared.domain.game.GameState
 import shared.domain.game.GameStateInfo
 import shared.domain.game.Leaderboard
 import shared.domain.game.LeaderboardItem
+import shared.domain.game.PlayerQuizOutcome
 import shared.domain.game.QuizIndex
+import shared.domain.game.QuizOutcomeType
 import shared.domain.game.Rank
 import shared.domain.game.Score
 import shared.domain.player.PlayerName
@@ -40,6 +42,18 @@ class Game {
         )
     }
 
+    fun getPlayerQuizOutcome(playerName: PlayerName): PlayerQuizOutcome = synchronized(this) {
+
+        check(currentGameState == GameState.Aggregated)
+
+        val isCorrect = currentAnswerMap[playerName] == quizList.get(currentQuizIndex.value).answer
+
+        return PlayerQuizOutcome(
+            type = if (isCorrect) QuizOutcomeType.Correct else QuizOutcomeType.Incorrect,
+            score = scoreMap[playerName] ?: Score(0)
+        )
+    }
+
     fun getLeaderboard(): Leaderboard = synchronized(this) {
 
         return leaderboard
@@ -52,9 +66,16 @@ class Game {
         currentGameState = GameState.Answering
     }
 
-    fun toAggregatedState() = synchronized(this) {
+    fun toAnsweredState() = synchronized(this) {
 
         check(currentGameState == GameState.Answering)
+
+        currentGameState = GameState.Answered
+    }
+
+    fun toAggregatedState() = synchronized(this) {
+
+        check(currentGameState == GameState.Answered)
 
         aggregate()
         currentGameState = GameState.Aggregated
@@ -66,6 +87,8 @@ class Game {
 
         currentQuizIndex = currentQuizIndex.createNext()
         currentGameState = GameState.Ready
+
+        currentAnswerMap.clear()
     }
 
     fun registerAnswer(playerName: PlayerName, answer: Answer): RegisterAnswerResult = synchronized(this) {
@@ -96,8 +119,6 @@ class Game {
                 scoreMap[playerName] = newScore
             }
         }
-
-        currentAnswerMap.clear()
     }
 
     private fun updateLeaderboard() {

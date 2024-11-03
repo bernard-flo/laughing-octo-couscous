@@ -9,6 +9,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import shared.domain.common.GameStateUpdated
 import shared.domain.game.Answer
+import shared.domain.game.GameState
+import shared.domain.game.PlayerQuizOutcome
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult
 import shared.domain.player.PlayerName
@@ -21,6 +23,7 @@ class PlayerClient(
     private val onGameStateUpdated: (GameStateUpdated) -> Unit,
     private val onAnswerRegistered: (PlayerRegisterAnswerResult.Success) -> Unit,
     private val onRegisterAnswerFailed: () -> Unit,
+    private val onQuizOutcome: (PlayerQuizOutcome) -> Unit,
 ) {
 
     private val stompClient: Client = createStompClient()
@@ -63,6 +66,16 @@ class PlayerClient(
         )
     }
 
+    private fun doGetQuizOutcome() {
+
+        stompClient.publish(
+            PublishParams(
+                destination = "/app/player/getQuizOutcome",
+                body = null,
+            )
+        )
+    }
+
     private fun createOnConnect(playerName: String): (IFrame) -> Unit {
 
         return {
@@ -71,6 +84,7 @@ class PlayerClient(
             stompClient.subscribe("/user/topic/player/enter/result", this::callbackPlayerEnterResult)
             stompClient.subscribe(TopicGameStateUpdated, this::callbackGameStateUpdated)
             stompClient.subscribe("/user/topic/player/registerAnswer/result", this::callbackRegisterAnswerResult)
+            stompClient.subscribe("/user/topic/player/getQuizOutcome/result", this::callbackGetQuizOutcomeResult)
 
             doEnter(playerName)
         }
@@ -95,6 +109,11 @@ class PlayerClient(
     private fun callbackGameStateUpdated(message: IMessage) {
 
         val gameStateUpdated = Json.decodeFromString<GameStateUpdated>(message.body)
+
+        if (gameStateUpdated.gameStateInfo.gameState == GameState.Aggregated) {
+            doGetQuizOutcome()
+        }
+
         onGameStateUpdated(gameStateUpdated)
     }
 
@@ -113,6 +132,12 @@ class PlayerClient(
                 onRegisterAnswerFailed()
             }
         }
+    }
+
+    private fun callbackGetQuizOutcomeResult(message: IMessage) {
+
+        val result = Json.decodeFromString<PlayerQuizOutcome>(message.body)
+        onQuizOutcome(result)
     }
 
 }
