@@ -1,5 +1,6 @@
 package be.domain.game
 
+import be.service.ResourceService
 import org.springframework.stereotype.Service
 import shared.domain.game.Answer
 import shared.domain.game.GameState
@@ -14,18 +15,11 @@ import shared.domain.game.Score
 import shared.domain.player.PlayerName
 
 @Service
-class Game {
+class Game(
+    resourceService: ResourceService,
+) {
 
-    private val quizList = listOf(
-        Quiz(Answer("A")),
-        Quiz(Answer("B")),
-        Quiz(Answer("C")),
-        Quiz(Answer("D")),
-        Quiz(Answer("E")),
-        Quiz(Answer("F")),
-        Quiz(Answer("G")),
-        Quiz(Answer("H")),
-    )
+    private val quizList: List<Quiz> = resourceService.loadQuizList()
 
     private val scoreMap = mutableMapOf<PlayerName, Score>()
     private val leaderboard = mutableListOf<LeaderboardItem>()
