@@ -21,6 +21,10 @@ internal val App = FC<Props> {
                     element = ManagerPage.create(),
                 ),
                 RouteObject(
+                    path = "/manager-more",
+                    element = ManagerMorePage.create(),
+                ),
+                RouteObject(
                     path = "/presenter",
                     element = PresenterPage.create(),
                 ),

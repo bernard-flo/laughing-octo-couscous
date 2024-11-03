@@ -11,6 +11,7 @@ private class PageController {
         value = [
             "/",
             "/manager",
+            "/manager-more",
             "/presenter",
         ]
     )

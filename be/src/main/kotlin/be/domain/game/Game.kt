@@ -90,6 +90,16 @@ class Game(
         currentAnswerMap.clear()
     }
 
+    fun resetGame() = synchronized(this) {
+
+        scoreMap.clear()
+        leaderboard.clear()
+        currentAnswerMap.clear()
+
+        currentGameState = GameState.Ready
+        currentQuizIndex = QuizIndex(0)
+    }
+
     fun registerAnswer(playerName: PlayerName, answer: Answer): RegisterAnswerResult = synchronized(this) {
 
         if (currentGameState != GameState.Answering) {

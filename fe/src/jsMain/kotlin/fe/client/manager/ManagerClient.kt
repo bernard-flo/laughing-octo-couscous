@@ -70,6 +70,16 @@ class ManagerClient(
         )
     }
 
+    fun resetGame() {
+
+        stompClient.publish(
+            PublishParams(
+                destination = "/app/manager/resetGame",
+                body = null,
+            )
+        )
+    }
+
     private fun doEnter(password: String) {
 
         stompClient.publish(

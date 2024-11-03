@@ -2,6 +2,7 @@ package be.controller
 
 import be.domain.common.SessionId
 import be.domain.manager.ManagerEnter
+import be.domain.manager.ManagerResetGame
 import be.domain.manager.ManagerToAggregatedState
 import be.domain.manager.ManagerToAnsweredState
 import be.domain.manager.ManagerToAnsweringState
@@ -24,6 +25,7 @@ private class ManagerController(
     private val managerToAnsweredState: ManagerToAnsweredState,
     private val managerToAggregatedState: ManagerToAggregatedState,
     private val managerToNextQuiz: ManagerToNextQuiz,
+    private val managerResetGame: ManagerResetGame,
 ) {
 
     @SendToUser("/topic/manager/enter/result")
@@ -79,6 +81,17 @@ private class ManagerController(
     ): GameStateUpdated {
 
         return managerToNextQuiz(
+            sessionId = SessionId(sessionId),
+        )
+    }
+
+    @SendTo(TopicGameStateUpdated)
+    @MessageMapping("/manager/resetGame")
+    fun managerResetGameApi(
+        @Header("simpSessionId") sessionId: String,
+    ): GameStateUpdated {
+
+        return managerResetGame(
             sessionId = SessionId(sessionId),
         )
     }
