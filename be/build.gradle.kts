@@ -17,3 +17,13 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
+
+tasks {
+    val copyJsDistribution = register<Copy>("copyJsDistribution") {
+        from(project(":fe").tasks.named("jsBrowserDistribution"))
+        into(layout.buildDirectory.dir("resources/main/static").get())
+    }
+    named("processResources") {
+        dependsOn(copyJsDistribution)
+    }
+}
