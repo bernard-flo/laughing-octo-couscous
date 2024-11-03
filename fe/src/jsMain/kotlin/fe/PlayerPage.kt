@@ -1,12 +1,21 @@
 package fe
 
 import fe.client.player.PlayerClient
+import mui.icons.material.ArrowCircleRight
 import mui.material.Box
 import mui.material.Button
 import mui.material.ButtonVariant
+import mui.material.Dialog
+import mui.material.DialogActions
+import mui.material.DialogContent
+import mui.material.DialogContentText
 import mui.material.FormControlVariant
+import mui.material.IconButton
+import mui.material.InputBase
+import mui.material.Paper
 import mui.material.TextField
 import mui.material.Typography
+import mui.material.TypographyAlign
 import mui.material.styles.TypographyVariant
 import mui.system.sx
 import react.FC
@@ -22,8 +31,10 @@ import shared.domain.game.GameStateInfo
 import shared.domain.game.PlayerQuizOutcome
 import shared.domain.game.QuizOutcomeType
 import web.cssom.Display
+import web.cssom.FlexDirection
 import web.cssom.JustifyContent
-import web.cssom.rem
+import web.cssom.pct
+import web.cssom.px
 
 internal val PlayerPage = FC<Props> {
 
@@ -93,6 +104,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
     var answer by useState<String>("")
     var chatMessage by useState<String>("")
+    var isChatDialogOpen by useState<Boolean>(false)
 
     val doClientRegisterAnswer = { props.playerClient.registerAnswer(answer) }
     val doClientChat = {
@@ -102,95 +114,144 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
         }
     }
 
-    div {
-        div {
-            +"내 점수: ${score}점"
+    Box {
+        sx {
+            display = Display.flex
+            justifyContent = JustifyContent.center
         }
-        div {
-            if (gameState == GameState.Finished) {
-                +"퀴즈가 끝났습니다"
-            } else {
-                +"${quizNo}번 문제"
+        Box {
+            sx {
+                display = Display.flex
+                flexDirection = FlexDirection.column
+                width = 70.pct
+                marginTop = 40.px
+                maxWidth = 500.px
+                gap = 17.px
             }
-        }
-
-        when (gameState) {
-
-            GameState.Ready -> {
-                div {
-                    +"문제를 기다려 주세요"
+            Box {
+                sx {
+                    display = Display.flex
+                    flexDirection = FlexDirection.row
+                    justifyContent = JustifyContent.right
+                    width = 100.pct
+                }
+                Typography {
+                    variant = TypographyVariant.h6
+                    +"현재 점수: ${score}점"
                 }
             }
+            Typography {
+                variant = TypographyVariant.h4
+                align = TypographyAlign.center
 
-            GameState.Answering -> {
-                div {
-                    +"정답을 입력해 주세요"
+                if (gameState == GameState.Finished) {
+                    +"퀴즈가 끝났습니다"
+                } else {
+                    +"${quizNo}번 문제"
                 }
             }
+            Typography {
+                variant = TypographyVariant.h6
+                align = TypographyAlign.center
 
-            GameState.Answered -> {
-                div {
-                    +"정답을 확인해 주세요"
-                }
-            }
+                when (gameState) {
+                    GameState.Ready -> {
+                        +"문제를 기다려 주세요"
+                    }
 
-            GameState.Aggregated -> {
-                div {
+                    GameState.Answering -> {
+                        +"정답을 입력해 주세요"
+                    }
 
-                    when (isCorrect) {
+                    GameState.Answered -> {
+                        +"정답을 확인해 주세요"
+                    }
 
-                        QuizOutcomeType.Correct -> {
-                            +"정답입니다"
+                    GameState.Aggregated -> {
+                        when (isCorrect) {
+
+                            QuizOutcomeType.Correct -> {
+                                +"정답입니다"
+                            }
+
+                            QuizOutcomeType.Incorrect -> {
+                                +"오답입니다"
+                            }
+
+                            null -> {
+                                +"-"
+                            }
                         }
+                    }
 
-                        QuizOutcomeType.Incorrect -> {
-                            +"오답입니다"
-                        }
-
-                        null -> {
-                            +"-"
-                        }
+                    GameState.Finished -> {
+                        +"감사합니다!"
                     }
                 }
             }
-
-            GameState.Finished -> {
-                div {
-                    +"감사합니다!"
+            Typography {
+                variant = TypographyVariant.subtitle1
+                +"내 답안: ${props.registeredAnswer ?: ""}"
+            }
+            Paper {
+                sx {
+                    display = Display.flex
+                    height = 50.px
+                    marginTop = (-10).px
+                    paddingLeft = 10.px
+                }
+                InputBase {
+                    fullWidth = true
+                    placeholder = "답안 입력"
+                    onChange = { answer = it.target.asDynamic().value }
+                    onKeyUp = { if (it.key == "Enter") doClientRegisterAnswer() }
+                }
+                IconButton {
+                    ArrowCircleRight()
+                    onClick = { doClientRegisterAnswer() }
                 }
             }
-        }
-
-        div {
-            +"내 답안: ${props.registeredAnswer ?: ""}"
-        }
-        div {
-            TextField {
-                variant = FormControlVariant.filled
-                onChange = { answer = it.target.asDynamic().value }
-                onKeyUp = { if (it.key == "Enter") doClientRegisterAnswer() }
-            }
-        }
-        div {
             Button {
-                variant = ButtonVariant.contained
-                onClick = { doClientRegisterAnswer() }
-                +"정답 보내기"
+                sx {
+                    marginTop = 20.px
+                }
+                fullWidth = true
+                variant = ButtonVariant.outlined
+                onClick = { isChatDialogOpen = true }
+                +"채팅 입력"
             }
-        }
-        div {
-            TextField {
-                variant = FormControlVariant.filled
-                value = chatMessage
-                onChange = { chatMessage = it.target.asDynamic().value }
-                onKeyUp = { if (it.key == "Enter") doClientChat() }
-            }
-        }
-        div {
-            Button {
-                variant = ButtonVariant.contained
-                onClick = { doClientChat() }
-                +"채팅"
+            Dialog {
+                fullWidth = true
+                maxWidth = false
+                open = isChatDialogOpen
+                DialogContent {
+                    DialogContentText {
+                        Paper {
+                            sx {
+                                display = Display.flex
+                                paddingLeft = 10.px
+                                height = 50.px
+                            }
+                            InputBase {
+                                fullWidth = true
+                                placeholder = "채팅 입력"
+                                value = chatMessage
+                                onChange = { chatMessage = it.target.asDynamic().value }
+                                onKeyUp = { if (it.key == "Enter") doClientChat() }
+                            }
+                            IconButton {
+                                ArrowCircleRight()
+                                onClick = { doClientChat() }
+                            }
+                        }
+                    }
+                    DialogActions {
+                        Button {
+                            onClick = { isChatDialogOpen = false }
+                            +"닫기"
+                        }
+                    }
+                }
             }
         }
     }
@@ -213,10 +274,9 @@ private val PlayerLoginComponent = FC<PlayerLoginComponentProps> { props ->
         sx {
             display = Display.grid
             justifyContent = JustifyContent.center
-            marginTop = 5.rem
-            gap = 2.rem
+            marginTop = 100.px
+            gap = 40.px
         }
-
         Typography {
             variant = TypographyVariant.h2
             +"Townhall"
