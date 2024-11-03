@@ -77,6 +77,7 @@ private external interface PlayerGameComponentProps : Props {
 private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
     val quizNo = props.currentGameStateInfo.quizIndex.value + 1
+    val gameState = props.currentGameStateInfo.gameState
     val score = props.quizOutcome?.score?.value ?: 0
     val isCorrect = props.quizOutcome?.type
 
@@ -89,10 +90,14 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
             +"내 점수: ${score}점"
         }
         div {
-            +"${quizNo}번 문제"
+            if (gameState == GameState.Finished) {
+                +"퀴즈가 끝났습니다"
+            } else {
+                +"${quizNo}번 문제"
+            }
         }
 
-        when (props.currentGameStateInfo.gameState) {
+        when (gameState) {
 
             GameState.Ready -> {
                 div {
@@ -129,6 +134,12 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
                             +"-"
                         }
                     }
+                }
+            }
+
+            GameState.Finished -> {
+                div {
+                    +"감사합니다!"
                 }
             }
         }

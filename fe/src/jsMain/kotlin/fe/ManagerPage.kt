@@ -56,13 +56,18 @@ private external interface ManagerGameComponentProps : Props {
 private val ManagerGameComponent = FC<ManagerGameComponentProps> { props ->
 
     val quizNo = props.currentGameStateInfo.quizIndex.value + 1
+    val gameState = props.currentGameStateInfo.gameState
 
     div {
         div {
-            +"${quizNo}번 문제"
+            if (gameState == GameState.Finished) {
+                +"퀴즈가 끝났습니다"
+            } else {
+                +"${quizNo}번 문제"
+            }
         }
 
-        when (props.currentGameStateInfo.gameState) {
+        when (gameState) {
 
             GameState.Ready -> {
                 div {
@@ -101,6 +106,12 @@ private val ManagerGameComponent = FC<ManagerGameComponentProps> { props ->
                         onClick = { props.managerClient.toNextQuiz() }
                         +"다음 문제!"
                     }
+                }
+            }
+
+            GameState.Finished -> {
+                div {
+                    +"수고하셨습니다"
                 }
             }
         }

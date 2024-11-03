@@ -15,6 +15,7 @@ enum class GameState {
     Answering,
     Answered,
     Aggregated,
+    Finished,
 }
 
 @Serializable

@@ -80,7 +80,12 @@ class Game(
         check(currentGameState == GameState.Aggregated)
 
         currentQuizIndex = currentQuizIndex.createNext()
-        currentGameState = GameState.Ready
+
+        if (currentQuizIndex.value < quizList.size) {
+            currentGameState = GameState.Ready
+        } else {
+            currentGameState = GameState.Finished
+        }
 
         currentAnswerMap.clear()
     }
