@@ -19,6 +19,7 @@ import shared.stomp.TopicGameStateUpdated
 
 class PresenterClient(
     private val onEntered: () -> Unit,
+    private val onEnterFailed: () -> Unit,
     private val onLeaderboardUpdated: (Leaderboard) -> Unit,
     private val onChatUpdated: (ChatUpdated) -> Unit,
 ) {
@@ -86,6 +87,7 @@ class PresenterClient(
 
             PresenterEnterResult.Fail -> {
                 console.log("enter failed")
+                onEnterFailed()
             }
         }
     }
