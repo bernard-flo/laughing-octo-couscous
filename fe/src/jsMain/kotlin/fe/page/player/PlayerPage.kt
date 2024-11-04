@@ -1,6 +1,8 @@
 package fe.page.player
 
 import fe.client.player.PlayerClient
+import fe.ext.notistack.SnackbarProvider
+import fe.ext.notistack.enqueueSnackbar
 import mui.icons.material.ArrowCircleRight
 import mui.material.Box
 import mui.material.Button
@@ -61,7 +63,7 @@ internal val PlayerPage = FC<Props> {
                 registeredAnswer = it.registeredAnswer.value
             },
             onRegisterAnswerFailed = {
-                registeredAnswer = "(잠시 후에 입력해주세요)"
+                enqueueSnackbar("잠시 후에 입력해주세요")
             },
             onQuizOutcome = {
                 quizOutcome = it
@@ -115,6 +117,13 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
             props.playerClient.chat(chatMessage)
             chatMessage = ""
         }
+    }
+
+    SnackbarProvider {
+        anchorOrigin = js("{ horizontal: 'left', vertical: 'top' }")
+        autoHideDuration = 1500
+        maxSnack = 2
+        variant = "error"
     }
 
     Box {

@@ -22,6 +22,7 @@ kotlin {
             implementation("org.jetbrains.kotlin-wrappers:kotlin-emotion")
             implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-material")
             implementation("org.jetbrains.kotlin-wrappers:kotlin-mui-icons-material")
+            implementation(npm("notistack", "3.0.1"))
             implementation(npm("@stomp/stompjs", "7.0.0"))
 
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
