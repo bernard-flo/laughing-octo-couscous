@@ -4,6 +4,7 @@
 package shared.domain.game
 
 import kotlinx.serialization.Serializable
+import shared.domain.player.PlayerGroup
 import shared.domain.player.PlayerName
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -93,3 +94,18 @@ data class LeaderboardItem(
 )
 
 typealias Leaderboard = List<LeaderboardItem>
+
+@Serializable
+data class GroupLeaderboardItem(
+    val rank: Rank,
+    val group: PlayerGroup,
+    val groupScore: GroupScore,
+    val playerItemList: List<LeaderboardItem>,
+)
+
+@Serializable
+data class GroupScore(
+    val value: Double,
+)
+
+typealias GroupLeaderboard = List<GroupLeaderboardItem>

@@ -3,6 +3,7 @@ package fe
 import fe.page.manager.ManagerMorePage
 import fe.page.manager.ManagerPage
 import fe.page.player.PlayerPage
+import fe.page.presenter.PresenterMorePage
 import fe.page.presenter.PresenterPage
 import react.FC
 import react.Props
@@ -31,6 +32,10 @@ internal val App = FC<Props> {
                 RouteObject(
                     path = "/presenter",
                     element = PresenterPage.create(),
+                ),
+                RouteObject(
+                    path = "/presenter-more",
+                    element = PresenterMorePage.create(),
                 ),
             )
         )

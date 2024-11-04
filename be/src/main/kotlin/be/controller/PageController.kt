@@ -13,6 +13,7 @@ private class PageController {
             "/manager",
             "/manager-more",
             "/presenter",
+            "/presenter-more",
         ]
     )
     fun page(): ModelAndView {

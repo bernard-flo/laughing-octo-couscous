@@ -44,6 +44,7 @@ internal val PresenterPage = FC<Props> {
                 onLeaderboardUpdated = {
                     leaderboard = it
                 },
+                onGroupLeaderboardUpdated = { },
                 onChatUpdated = {
                     cachedChatList.add(it.chatItem)
                     if (cachedChatList.size > 20) {
