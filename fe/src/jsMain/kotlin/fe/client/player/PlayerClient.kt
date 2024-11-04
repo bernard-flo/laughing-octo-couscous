@@ -12,11 +12,11 @@ import shared.domain.common.GameStateUpdated
 import shared.domain.game.Answer
 import shared.domain.game.GameState
 import shared.domain.game.PlayerQuizOutcome
+import shared.domain.player.InputPlayerName
 import shared.domain.player.PlayerChatCommandPayload
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult
 import shared.domain.player.PlayerGetQuizOutcomeResult
-import shared.domain.player.PlayerName
 import shared.domain.player.PlayerRegisterAnswerCommandPayload
 import shared.domain.player.PlayerRegisterAnswerResult
 import shared.stomp.TopicGameStateUpdated
@@ -77,7 +77,7 @@ class PlayerClient(
                 destination = "/app/player/enter",
                 body = Json.encodeToString(
                     PlayerEnterCommandPayload(
-                        playerName = PlayerName(playerName)
+                        playerName = InputPlayerName(playerName)
                     )
                 )
             )

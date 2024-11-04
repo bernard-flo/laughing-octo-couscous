@@ -11,7 +11,7 @@ import kotlin.js.JsExport
 
 @Serializable
 data class PlayerEnterCommandPayload(
-    val playerName: PlayerName,
+    val playerName: InputPlayerName,
 )
 
 @Serializable
@@ -26,3 +26,8 @@ sealed class PlayerEnterResult {
     data object Fail : PlayerEnterResult()
 
 }
+
+@Serializable
+data class InputPlayerName(
+    val value: String,
+)

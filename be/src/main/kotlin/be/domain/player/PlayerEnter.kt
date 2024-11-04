@@ -2,28 +2,31 @@ package be.domain.player
 
 import be.domain.common.SessionId
 import be.domain.game.Game
-import be.service.ResourceService
+import be.service.LoadPlayerService
 import org.springframework.stereotype.Service
+import shared.domain.player.InputPlayerName
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult
+import shared.domain.player.PlayerName
 
 @Service
 class PlayerEnter(
     private val playerSessionRegistry: PlayerSessionRegistry,
     private val game: Game,
-    resourceService: ResourceService,
+    loadPlayerService: LoadPlayerService,
 ) {
 
-    private val availablePlayerNames = resourceService.loadPlayerNames()
+    private val playerNameList = loadPlayerService.playerInfoList.map { it.playerName }
 
     operator fun invoke(
         sessionId: SessionId,
         playerEnterCommandPayload: PlayerEnterCommandPayload,
     ): PlayerEnterResult {
 
-        val playerName = playerEnterCommandPayload.playerName
+        val inputPlayerName = playerEnterCommandPayload.playerName
 
-        if (availablePlayerNames.contains(playerName) == false) {
+        val playerName = findPlayerName(inputPlayerName)
+        if (playerName == null) {
             return PlayerEnterResult.Fail
         }
 
@@ -36,6 +39,10 @@ class PlayerEnter(
         return PlayerEnterResult.Success(
             currentGameStateInfo = game.getGameStateInfo(),
         )
+    }
+
+    private fun findPlayerName(inputPlayerName: InputPlayerName): PlayerName? {
+        return playerNameList.find { it.value.lowercase() == inputPlayerName.value.lowercase() }
     }
 
 }
