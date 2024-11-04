@@ -58,6 +58,9 @@ internal val PlayerPage = FC<Props> {
             },
             onGameStateUpdated = {
                 currentGameStateInfo = it.gameStateInfo
+                if (it.gameStateInfo.gameState == GameState.Ready) {
+                    registeredAnswer = ""
+                }
             },
             onAnswerRegistered = {
                 registeredAnswer = it.registeredAnswer.value
@@ -111,7 +114,12 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
     var chatMessage by useState<String>("")
     var isChatDialogOpen by useState<Boolean>(false)
 
-    val doClientRegisterAnswer = { props.playerClient.registerAnswer(answer) }
+    val doClientRegisterAnswer = {
+        if (answer.isNotBlank()) {
+            props.playerClient.registerAnswer(answer)
+            answer = ""
+        }
+    }
     val doClientChat = {
         if (chatMessage.isNotBlank()) {
             props.playerClient.chat(chatMessage)
@@ -211,7 +219,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
             }
             Typography {
                 variant = TypographyVariant.subtitle1
-                +"내 답안: ${props.registeredAnswer ?: ""}"
+                +"내가 보낸 답안: ${props.registeredAnswer ?: ""}"
             }
             Paper {
                 sx {
@@ -223,6 +231,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
                 InputBase {
                     fullWidth = true
                     placeholder = "답안 입력"
+                    value = answer
                     onChange = { answer = it.target.asDynamic().value }
                     onKeyUp = { if (it.key == "Enter") doClientRegisterAnswer() }
                 }
