@@ -1,6 +1,7 @@
 package be.domain.game
 
 import be.service.LoadQuizService
+import be.service.ScoreMapBackupService
 import org.springframework.stereotype.Service
 import shared.domain.game.Answer
 import shared.domain.game.GameState
@@ -18,6 +19,7 @@ import shared.domain.player.PlayerName
 
 @Service
 class Game(
+    private val scoreMapBackupService: ScoreMapBackupService,
     loadQuizService: LoadQuizService,
 ) {
 
@@ -30,6 +32,13 @@ class Game(
 
     private var currentGameState = GameState.Ready
     private var currentQuizIndex = QuizIndex(0)
+
+    init {
+        scoreMapBackupService.restoreScoreMap()?.let {
+            scoreMap.putAll(it)
+            updateLeaderboard()
+        }
+    }
 
     fun getGameStateInfo(): GameStateInfo = synchronized(this) {
 
@@ -124,6 +133,8 @@ class Game(
         updateQuizOutcome()
         updateScoreMap()
         updateLeaderboard()
+
+        scoreMapBackupService.backupScoreMap(scoreMap)
     }
 
     private fun updateQuizOutcome() {
