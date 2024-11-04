@@ -256,6 +256,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
                 fullWidth = true
                 maxWidth = false
                 open = isChatDialogOpen
+                onKeyDown = { if (it.key == "Escape") isChatDialogOpen = false }
                 DialogContent {
                     DialogContentText {
                         Paper {
