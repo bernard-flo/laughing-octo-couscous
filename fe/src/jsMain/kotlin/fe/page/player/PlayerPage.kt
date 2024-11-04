@@ -204,6 +204,9 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
                             QuizOutcomeType.Incorrect -> {
                                 +"오답입니다."
+                                if (quizOutcome.point.value != 0) {
+                                    +" (${quizOutcome.point.value}점)"
+                                }
                             }
 
                             null -> {
