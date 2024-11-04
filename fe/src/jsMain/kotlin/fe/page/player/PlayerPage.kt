@@ -3,6 +3,7 @@ package fe.page.player
 import fe.client.player.PlayerClient
 import fe.ext.notistack.SnackbarProvider
 import fe.ext.notistack.enqueueSnackbar
+import js.objects.jso
 import mui.icons.material.ArrowCircleRight
 import mui.material.Box
 import mui.material.Button
@@ -128,7 +129,10 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
     }
 
     SnackbarProvider {
-        anchorOrigin = js("{ horizontal: 'left', vertical: 'top' }")
+        anchorOrigin = jso {
+            horizontal = "left"
+            vertical = "top"
+        }
         autoHideDuration = 1500
         maxSnack = 2
         variant = "error"
