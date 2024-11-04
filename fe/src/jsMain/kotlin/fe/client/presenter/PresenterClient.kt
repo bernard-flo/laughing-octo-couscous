@@ -4,7 +4,7 @@ import fe.client.createStompClient
 import fe.ext.stompjs.Client
 import fe.ext.stompjs.IFrame
 import fe.ext.stompjs.IMessage
-import fe.ext.stompjs.PublishParams
+import js.objects.jso
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import shared.domain.common.ChatUpdated
@@ -58,34 +58,34 @@ class PresenterClient(
     private fun doEnter(password: String) {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/presenter/enter",
+            jso {
+                destination = "/app/presenter/enter"
                 body = Json.encodeToString(
                     PresenterEnterCommandPayload(
                         password = PresenterPassword(password),
                     )
                 )
-            )
+            }
         )
     }
 
     private fun doGetLeaderboard() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/presenter/getLeaderboard",
-                body = null,
-            )
+            jso {
+                destination = "/app/presenter/getLeaderboard"
+                body = null
+            }
         )
     }
 
     private fun doGetGroupLeaderboard() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/presenter/getGroupLeaderboard",
-                body = null,
-            )
+            jso {
+                destination = "/app/presenter/getGroupLeaderboard"
+                body = null
+            }
         )
     }
 

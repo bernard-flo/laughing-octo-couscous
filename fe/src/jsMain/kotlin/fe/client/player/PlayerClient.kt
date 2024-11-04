@@ -4,7 +4,7 @@ import fe.client.createStompClient
 import fe.ext.stompjs.Client
 import fe.ext.stompjs.IFrame
 import fe.ext.stompjs.IMessage
-import fe.ext.stompjs.PublishParams
+import js.objects.jso
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import shared.domain.common.ChatMessage
@@ -61,52 +61,52 @@ class PlayerClient(
     fun registerAnswer(answerValue: String) {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/player/registerAnswer",
+            jso {
+                destination = "/app/player/registerAnswer"
                 body = Json.encodeToString(
                     PlayerRegisterAnswerCommandPayload(
                         answer = Answer(answerValue),
                     )
                 )
-            )
+            }
         )
     }
 
     fun chat(chatMessage: String) {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/player/chat",
+            jso {
+                destination = "/app/player/chat"
                 body = Json.encodeToString(
                     PlayerChatCommandPayload(
                         chatMessage = ChatMessage(chatMessage),
                     )
-                ),
-            )
+                )
+            }
         )
     }
 
     private fun doEnter(playerName: String) {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/player/enter",
+            jso {
+                destination = "/app/player/enter"
                 body = Json.encodeToString(
                     PlayerEnterCommandPayload(
                         playerName = InputPlayerName(playerName)
                     )
                 )
-            )
+            }
         )
     }
 
     private fun doGetQuizOutcome() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/player/getQuizOutcome",
-                body = null,
-            )
+            jso {
+                destination = "/app/player/getQuizOutcome"
+                body = null
+            }
         )
     }
 

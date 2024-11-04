@@ -4,7 +4,7 @@ import fe.client.createStompClient
 import fe.ext.stompjs.Client
 import fe.ext.stompjs.IFrame
 import fe.ext.stompjs.IMessage
-import fe.ext.stompjs.PublishParams
+import js.objects.jso
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import shared.domain.common.GameStateUpdated
@@ -49,64 +49,64 @@ class ManagerClient(
     fun toAnsweringState() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/manager/toAnsweringState",
-                body = null,
-            )
+            jso {
+                destination = "/app/manager/toAnsweringState"
+                body = null
+            }
         )
     }
 
     fun toAnsweredState() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/manager/toAnsweredState",
-                body = null,
-            )
+            jso {
+                destination = "/app/manager/toAnsweredState"
+                body = null
+            }
         )
     }
 
     fun toAggregatedState() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/manager/toAggregatedState",
-                body = null,
-            )
+            jso {
+                destination = "/app/manager/toAggregatedState"
+                body = null
+            }
         )
     }
 
     fun toNextQuiz() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/manager/toNextQuiz",
-                body = null,
-            )
+            jso {
+                destination = "/app/manager/toNextQuiz"
+                body = null
+            }
         )
     }
 
     fun resetGame() {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/manager/resetGame",
-                body = null,
-            )
+            jso {
+                destination = "/app/manager/resetGame"
+                body = null
+            }
         )
     }
 
     private fun doEnter(password: String) {
 
         stompClient.publish(
-            PublishParams(
-                destination = "/app/manager/enter",
+            jso {
+                destination = "/app/manager/enter"
                 body = Json.encodeToString(
                     ManagerEnterCommandPayload(
                         password = ManagerPassword(password),
                     )
                 )
-            )
+            }
         )
     }
 
