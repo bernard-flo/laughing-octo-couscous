@@ -98,7 +98,7 @@ private val PresenterGameComponent = FC<PresenterGameComponentProps> { props ->
                 padding = 30.px
                 gap = 30.px
                 overflow = Overflow.scroll
-                scrollbarColor = "#ffffff #ffffff".asDynamic()
+                scrollbarColor = "#000000 #000000".asDynamic()
             }
 
             for (leaderboardItem in props.leaderboard) {
@@ -141,7 +141,7 @@ private val PresenterGameComponent = FC<PresenterGameComponentProps> { props ->
                     height = 100.pct
                     marginTop = 20.px
                     padding = 20.px
-                    backgroundColor = Color("#fafafa")
+                    backgroundColor = Color("#303030")
                     overflow = Overflow.hidden
                 }
                 variant = PaperVariant.outlined
