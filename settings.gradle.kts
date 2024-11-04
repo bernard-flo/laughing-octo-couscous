@@ -4,4 +4,6 @@ include(
     ":shared",
     ":be",
     ":fe",
+
+    ":be-performance-test",
 )
