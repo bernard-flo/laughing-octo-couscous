@@ -1,5 +1,9 @@
 package fe
 
+import fe.page.manager.ManagerMorePage
+import fe.page.manager.ManagerPage
+import fe.page.player.PlayerPage
+import fe.page.presenter.PresenterPage
 import react.FC
 import react.Props
 import react.create

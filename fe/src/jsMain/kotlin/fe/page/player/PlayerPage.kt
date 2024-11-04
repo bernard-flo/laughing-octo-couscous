@@ -1,4 +1,4 @@
-package fe
+package fe.page.player
 
 import fe.client.player.PlayerClient
 import mui.icons.material.ArrowCircleRight

@@ -1,4 +1,4 @@
-package fe
+package fe.page.presenter
 
 import fe.client.presenter.PresenterClient
 import mui.icons.material.StarOutline

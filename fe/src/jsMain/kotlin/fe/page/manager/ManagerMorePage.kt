@@ -1,4 +1,4 @@
-package fe
+package fe.page.manager
 
 import fe.client.manager.ManagerClient
 import mui.material.Button
