@@ -20,6 +20,10 @@ import shared.domain.player.PlayerGetQuizOutcomeResult
 import shared.domain.player.PlayerRegisterAnswerCommandPayload
 import shared.domain.player.PlayerRegisterAnswerResult
 import shared.stomp.TopicGameStateUpdated
+import web.storage.localStorage
+
+
+private const val playerNameStorageKey = "playerName"
 
 class PlayerClient(
     private val onEntered: (PlayerEnterResult.Success) -> Unit,
@@ -32,7 +36,19 @@ class PlayerClient(
 
     private val stompClient: Client = createStompClient()
 
+    private var enteredPlayerName: String? = null
+
+    fun tryEnter() {
+
+        val saved = localStorage.getItem(playerNameStorageKey)
+        if (saved != null) {
+            enter(saved)
+        }
+    }
+
     fun enter(playerName: String) {
+
+        enteredPlayerName = playerName
 
         if (stompClient.active) {
             doEnter(playerName)
@@ -115,9 +131,13 @@ class PlayerClient(
 
             is PlayerEnterResult.Success -> {
                 console.log("enter succeeded")
+
+                localStorage.setItem(playerNameStorageKey, enteredPlayerName!!)
+
                 if (result.currentGameStateInfo.gameState == GameState.Aggregated) {
                     doGetQuizOutcome()
                 }
+
                 onEntered(result)
             }
 

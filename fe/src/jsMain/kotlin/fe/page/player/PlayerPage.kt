@@ -24,6 +24,7 @@ import react.ReactNode
 import react.StateSetter
 import react.dom.html.ReactHTML.div
 import react.dom.onChange
+import react.useEffect
 import react.useRef
 import react.useState
 import shared.domain.game.GameState
@@ -67,6 +68,8 @@ internal val PlayerPage = FC<Props> {
             },
         )
     )
+
+    useEffect(null) { playerClientRef.current!!.tryEnter() }
 
     div {
         if (entered) {

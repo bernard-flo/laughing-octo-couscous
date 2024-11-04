@@ -12,6 +12,10 @@ import shared.domain.manager.ManagerEnterCommandPayload
 import shared.domain.manager.ManagerEnterResult
 import shared.domain.manager.ManagerPassword
 import shared.stomp.TopicGameStateUpdated
+import web.storage.localStorage
+
+
+private const val managerPasswordStorageKey = "managerPassword"
 
 class ManagerClient(
     private val onEntered: (ManagerEnterResult.Success) -> Unit,
@@ -20,7 +24,19 @@ class ManagerClient(
 
     private val stompClient: Client = createStompClient()
 
+    private var enteredPassword: String? = null
+
+    fun tryEnter() {
+
+        val saved = localStorage.getItem(managerPasswordStorageKey)
+        if (saved != null) {
+            enter(saved)
+        }
+    }
+
     fun enter(password: String) {
+
+        enteredPassword = password
 
         if (stompClient.active) {
             doEnter(password)
@@ -113,6 +129,9 @@ class ManagerClient(
 
             is ManagerEnterResult.Success -> {
                 console.log("enter succeeded")
+
+                localStorage.setItem(managerPasswordStorageKey, enteredPassword!!)
+
                 onEntered(result)
             }
 

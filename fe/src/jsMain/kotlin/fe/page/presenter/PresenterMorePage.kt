@@ -9,6 +9,7 @@ import mui.system.sx
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import react.useEffect
 import react.useRef
 import react.useState
 import shared.domain.game.GroupLeaderboard
@@ -39,6 +40,8 @@ internal val PresenterMorePage = FC<Props> {
             )
         )
     }()
+
+    useEffect(null) { presenterClientRef.current!!.tryEnter() }
 
     div {
         if (entered) {

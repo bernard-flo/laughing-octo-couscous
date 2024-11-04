@@ -18,6 +18,10 @@ import shared.domain.presenter.PresenterGetGroupLeaderboardResult
 import shared.domain.presenter.PresenterGetLeaderboardResult
 import shared.domain.presenter.PresenterPassword
 import shared.stomp.TopicGameStateUpdated
+import web.storage.localStorage
+
+
+private const val presenterPasswordStorageKey = "presenterPassword"
 
 class PresenterClient(
     private val onEntered: () -> Unit,
@@ -29,7 +33,19 @@ class PresenterClient(
 
     private val stompClient: Client = createStompClient()
 
+    private var enteredPassword: String? = null
+
+    fun tryEnter() {
+
+        val saved = localStorage.getItem(presenterPasswordStorageKey)
+        if (saved != null) {
+            enter(saved)
+        }
+    }
+
     fun enter(password: String) {
+
+        enteredPassword = password
 
         if (stompClient.active) {
             doEnter(password)
@@ -98,6 +114,9 @@ class PresenterClient(
 
             PresenterEnterResult.Success -> {
                 console.log("enter succeeded")
+
+                localStorage.setItem(presenterPasswordStorageKey, enteredPassword!!)
+
                 onEntered()
                 doGetLeaderboard()
                 doGetGroupLeaderboard()

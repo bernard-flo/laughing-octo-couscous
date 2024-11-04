@@ -6,6 +6,7 @@ import mui.material.ButtonVariant
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.div
+import react.useEffect
 import react.useRef
 import react.useState
 import shared.domain.game.GameState
@@ -27,6 +28,8 @@ internal val ManagerPage = FC<Props> {
             },
         )
     )
+
+    useEffect(null) { managerClientRef.current!!.tryEnter() }
 
     div {
         if (entered) {
