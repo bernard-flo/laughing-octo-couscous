@@ -40,7 +40,7 @@ class Game(
 
         check(currentGameState == GameState.Aggregated)
 
-        val isCorrect = currentAnswerMap[playerName] == quizList.get(currentQuizIndex.value).answer
+        val isCorrect = currentAnswerMap[playerName] == quizList[currentQuizIndex.value].answer
 
         return PlayerQuizOutcome(
             type = if (isCorrect) QuizOutcomeType.Correct else QuizOutcomeType.Incorrect,
@@ -81,10 +81,10 @@ class Game(
 
         currentQuizIndex = currentQuizIndex.createNext()
 
-        if (currentQuizIndex.value < quizList.size) {
-            currentGameState = GameState.Ready
+        currentGameState = if (currentQuizIndex.value < quizList.size) {
+            GameState.Ready
         } else {
-            currentGameState = GameState.Finished
+            GameState.Finished
         }
 
         currentAnswerMap.clear()
@@ -119,7 +119,7 @@ class Game(
 
     private fun updateScoreMap() {
 
-        val quizAnswer = quizList.get(currentQuizIndex.value).answer
+        val quizAnswer = quizList[currentQuizIndex.value].answer
 
         for ((playerName, playerAnswer) in currentAnswerMap) {
             if (playerAnswer == quizAnswer) {
