@@ -100,7 +100,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
     val quizNo = props.currentGameStateInfo.quizIndex.value + 1
     val gameState = props.currentGameStateInfo.gameState
     val score = props.quizOutcome?.score?.value ?: 0
-    val isCorrect = props.quizOutcome?.type
+    val quizOutcome = props.quizOutcome
 
     var answer by useState<String>("")
     var chatMessage by useState<String>("")
@@ -168,14 +168,22 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
                     }
 
                     GameState.Aggregated -> {
-                        when (isCorrect) {
+                        when (quizOutcome?.type) {
+
+                            QuizOutcomeType.Early -> {
+                                +"정답입니다! 선착순 점수 추가! (${quizOutcome.point.value}점)"
+                            }
 
                             QuizOutcomeType.Correct -> {
-                                +"정답입니다"
+                                +"정답입니다! (${quizOutcome.point.value}점)"
+                            }
+
+                            QuizOutcomeType.Partial -> {
+                                +"부분 정답입니다! (${quizOutcome.point.value}점)"
                             }
 
                             QuizOutcomeType.Incorrect -> {
-                                +"오답입니다"
+                                +"오답입니다."
                             }
 
                             null -> {

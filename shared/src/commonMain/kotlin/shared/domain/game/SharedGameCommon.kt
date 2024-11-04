@@ -27,12 +27,15 @@ data class GameStateInfo(
 @Serializable
 data class PlayerQuizOutcome(
     val type: QuizOutcomeType,
+    val point: Point,
     val score: Score,
 )
 
 @Serializable
 enum class QuizOutcomeType {
+    Early,
     Correct,
+    Partial,
     Incorrect,
 }
 
@@ -63,8 +66,22 @@ data class Score(
     val value: Int,
 ) {
 
-    fun createPlus(amount: Int): Score {
-        return Score(this.value + amount)
+    fun createPlus(point: Point): Score {
+        return Score(this.value + point.value)
+    }
+}
+
+@Serializable
+data class Point(
+    val value: Int,
+) {
+
+    fun isZero(): Boolean {
+        return value == 0
+    }
+
+    fun createPlus(other: Point): Point {
+        return Point(this.value + other.value)
     }
 }
 

@@ -16,6 +16,9 @@ dependencies {
     }
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+
+    implementation("com.opencsv:opencsv:5.9")
 }
 
 tasks {

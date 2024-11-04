@@ -15,6 +15,7 @@ import shared.domain.game.PlayerQuizOutcome
 import shared.domain.player.PlayerChatCommandPayload
 import shared.domain.player.PlayerEnterCommandPayload
 import shared.domain.player.PlayerEnterResult
+import shared.domain.player.PlayerGetQuizOutcomeResult
 import shared.domain.player.PlayerName
 import shared.domain.player.PlayerRegisterAnswerCommandPayload
 import shared.domain.player.PlayerRegisterAnswerResult
@@ -114,6 +115,9 @@ class PlayerClient(
 
             is PlayerEnterResult.Success -> {
                 console.log("enter succeeded")
+                if (result.currentGameStateInfo.gameState == GameState.Aggregated) {
+                    doGetQuizOutcome()
+                }
                 onEntered(result)
             }
 
@@ -154,8 +158,19 @@ class PlayerClient(
 
     private fun callbackGetQuizOutcomeResult(message: IMessage) {
 
-        val result = Json.decodeFromString<PlayerQuizOutcome>(message.body)
-        onQuizOutcome(result)
+        val result = Json.decodeFromString<PlayerGetQuizOutcomeResult>(message.body)
+
+        when (result) {
+
+            is PlayerGetQuizOutcomeResult.Success -> {
+                console.log("getQuizOutcome succeeded")
+                onQuizOutcome(result.playerQuizOutcome)
+            }
+
+            is PlayerGetQuizOutcomeResult.Fail -> {
+                console.log("getQuizOutcome failed")
+            }
+        }
     }
 
 }

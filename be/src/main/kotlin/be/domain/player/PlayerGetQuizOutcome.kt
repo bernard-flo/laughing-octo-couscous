@@ -3,7 +3,7 @@ package be.domain.player
 import be.domain.common.SessionId
 import be.domain.game.Game
 import org.springframework.stereotype.Service
-import shared.domain.game.PlayerQuizOutcome
+import shared.domain.player.PlayerGetQuizOutcomeResult
 
 @Service
 class PlayerGetQuizOutcome(
@@ -13,7 +13,7 @@ class PlayerGetQuizOutcome(
 
     operator fun invoke(
         sessionId: SessionId,
-    ): PlayerQuizOutcome {
+    ): PlayerGetQuizOutcomeResult {
 
         val playerSession = playerSessionRegistry.get(sessionId) ?: throw IllegalStateException()
 
