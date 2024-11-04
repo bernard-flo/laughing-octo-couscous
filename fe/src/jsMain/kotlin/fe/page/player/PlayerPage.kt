@@ -130,7 +130,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
     SnackbarProvider {
         anchorOrigin = jso {
-            horizontal = "left"
+            horizontal = "center"
             vertical = "top"
         }
         autoHideDuration = 1500
