@@ -40,12 +40,10 @@ class Game(
         val restoredScoreMap = scoreMapBackupService.restoreScoreMap()
         if (restoredScoreMap != null) {
             scoreMap.putAll(restoredScoreMap)
+            updateLeaderboard()
         } else {
-            playerNameList.forEach {
-                scoreMap[it] = Score(0)
-            }
+            initScoreMap()
         }
-        updateLeaderboard()
     }
 
     fun getGameStateInfo(): GameStateInfo = synchronized(this) {
@@ -125,6 +123,8 @@ class Game(
 
         currentGameState = GameState.Ready
         currentQuizIndex = QuizIndex(0)
+
+        initScoreMap()
     }
 
     fun registerAnswer(playerName: PlayerName, answer: Answer): RegisterAnswerResult = synchronized(this) {
@@ -202,6 +202,14 @@ class Game(
                 )
             )
         }
+    }
+
+    private fun initScoreMap() {
+
+        playerNameList.forEach {
+            scoreMap[it] = Score(0)
+        }
+        updateLeaderboard()
     }
 
 }
