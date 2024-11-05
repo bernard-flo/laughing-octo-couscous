@@ -34,3 +34,6 @@ build
 
 # Ignore Kotlin files
 .kotlin/
+
+# Application
+/backup/
