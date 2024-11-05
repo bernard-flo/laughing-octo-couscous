@@ -160,6 +160,13 @@ class Game(
             }
             currentQuizOutcomeInfoMap[playerName] = outcomeInfo
         }
+
+        for (playerName in playerNameList) {
+            currentQuizOutcomeInfoMap.putIfAbsent(
+                playerName,
+                QuizOutcomeInfo(QuizOutcomeType.Incorrect, currentQuiz.wrongPoint),
+            )
+        }
     }
 
     private fun updateScoreMap() {
