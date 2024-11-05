@@ -61,6 +61,7 @@ internal val PlayerPage = FC<Props> {
                 currentGameStateInfo = it.gameStateInfo
                 if (it.gameStateInfo.gameState == GameState.Ready) {
                     registeredAnswer = ""
+                    quizOutcome = null
                 }
             },
             onAnswerRegistered = {
