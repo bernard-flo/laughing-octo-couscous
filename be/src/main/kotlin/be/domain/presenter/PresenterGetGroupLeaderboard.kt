@@ -9,6 +9,9 @@ import shared.domain.game.GroupScore
 import shared.domain.game.Rank
 import shared.domain.presenter.PresenterGetGroupLeaderboardResult
 
+
+private val groupExclusion = listOf("테크본부", "이용권&정산개발 Unit")
+
 @Service
 class PresenterGetGroupLeaderboard(
     private val presenterSessionRegistry: PresenterSessionRegistry,
@@ -27,6 +30,7 @@ class PresenterGetGroupLeaderboard(
         val groupedItemMap = game.getLeaderboard()
             .groupBy { playerNameToGroupMap[it.playerName]!! }
             .map { (group, playerItems) -> group to playerItems }
+            .filter { (group, _) -> groupExclusion.contains(group.value) == false }
             .toMap()
 
         val groupScoreMap = groupedItemMap
