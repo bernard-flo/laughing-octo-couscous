@@ -185,18 +185,20 @@ class Game(
         val sortedEntries = scoreMap.entries.sortedByDescending { (_, score) -> score.value }
 
         var curRankValue = 1
-        var prevScoreValue = 0
+        var prevScoreValue = sortedEntries.first().value.value
+
         for ((playerName, score) in sortedEntries) {
-            val rankValue = if (score.value == prevScoreValue) {
+
+            if (score.value == prevScoreValue) {
                 curRankValue
             } else {
-                curRankValue++
+                curRankValue += 1
+                prevScoreValue = score.value
             }
-            prevScoreValue = score.value
 
             leaderboard.add(
                 LeaderboardItem(
-                    rank = Rank(rankValue),
+                    rank = Rank(curRankValue),
                     playerName = playerName,
                     score = score,
                 )
