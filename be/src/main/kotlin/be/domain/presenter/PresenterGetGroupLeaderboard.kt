@@ -2,6 +2,7 @@ package be.domain.presenter
 
 import be.domain.common.SessionId
 import be.domain.game.Game
+import be.domain.player.PlayerSessionRegistry
 import be.service.LoadPlayerService
 import org.springframework.stereotype.Service
 import shared.domain.game.GroupLeaderboardItem
@@ -17,6 +18,7 @@ class PresenterGetGroupLeaderboard(
     private val presenterSessionRegistry: PresenterSessionRegistry,
     private val game: Game,
     private val loadPlayerService: LoadPlayerService,
+    private val playerSessionRegistry: PlayerSessionRegistry,
 ) {
 
     operator fun invoke(
@@ -27,7 +29,10 @@ class PresenterGetGroupLeaderboard(
 
         val playerNameToGroupMap = loadPlayerService.playerInfoList.associateBy({ it.playerName }, { it.playerGroup })
 
+        val registeredPlayerNames = playerSessionRegistry.getAll().map { it.playerName }
+
         val groupedItemMap = game.getLeaderboard()
+            .filter { registeredPlayerNames.contains(it.playerName) }
             .groupBy { playerNameToGroupMap[it.playerName]!! }
             .map { (group, playerItems) -> group to playerItems }
             .filter { (group, _) -> groupExclusion.contains(group.value) == false }

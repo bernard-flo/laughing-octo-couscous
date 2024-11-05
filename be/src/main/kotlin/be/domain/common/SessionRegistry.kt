@@ -14,4 +14,9 @@ open class SessionRegistry<SessionT : Session> {
         return sessionMap[sessionId]
     }
 
+    fun getAll(): List<SessionT> {
+
+        return sessionMap.values.toList()
+    }
+
 }
