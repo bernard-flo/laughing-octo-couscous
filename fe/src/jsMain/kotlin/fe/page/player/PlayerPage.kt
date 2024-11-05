@@ -34,6 +34,7 @@ import shared.domain.game.GameState
 import shared.domain.game.GameStateInfo
 import shared.domain.game.PlayerQuizOutcome
 import shared.domain.game.QuizOutcomeType
+import shared.domain.game.Score
 import web.cssom.Display
 import web.cssom.FlexDirection
 import web.cssom.JustifyContent
@@ -47,6 +48,7 @@ internal val PlayerPage = FC<Props> {
     var currentGameStateInfo by useState<GameStateInfo?>(null)
     var registeredAnswer by useState<String?>(null)
     var quizOutcome by useState<PlayerQuizOutcome?>(null)
+    var myScore by useState(Score(0))
 
     val playerClientRef = useRef(
         PlayerClient(
@@ -72,6 +74,7 @@ internal val PlayerPage = FC<Props> {
             },
             onQuizOutcome = {
                 quizOutcome = it
+                myScore = it.score
             },
         )
     )
@@ -85,6 +88,7 @@ internal val PlayerPage = FC<Props> {
                 this.currentGameStateInfo = currentGameStateInfo!!
                 this.registeredAnswer = registeredAnswer
                 this.quizOutcome = quizOutcome
+                this.myScore = myScore
             }
         } else {
             PlayerLoginComponent {
@@ -103,14 +107,15 @@ private external interface PlayerGameComponentProps : Props {
     var currentGameStateInfo: GameStateInfo
     var registeredAnswer: String?
     var quizOutcome: PlayerQuizOutcome?
+    var myScore: Score
 }
 
 private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
 
     val quizNo = props.currentGameStateInfo.quizIndex.value + 1
     val gameState = props.currentGameStateInfo.gameState
-    val score = props.quizOutcome?.score?.value ?: 0
     val quizOutcome = props.quizOutcome
+    val myScoreValue = props.myScore.value
 
     var answer by useState<String>("")
     var chatMessage by useState<String>("")
@@ -162,7 +167,7 @@ private val PlayerGameComponent = FC<PlayerGameComponentProps> { props ->
                 }
                 Typography {
                     variant = TypographyVariant.h6
-                    +"현재 점수: ${score}점"
+                    +"현재 점수: ${myScoreValue}점"
                 }
             }
             Typography {
