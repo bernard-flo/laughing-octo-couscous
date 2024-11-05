@@ -50,7 +50,9 @@ class Game(
 
     fun getPlayerQuizOutcome(playerName: PlayerName): PlayerGetQuizOutcomeResult = synchronized(this) {
 
-        check(currentGameState == GameState.Aggregated)
+        if (currentGameState != GameState.Aggregated) {
+            return PlayerGetQuizOutcomeResult.Fail
+        }
 
         val outcomeInfo = currentQuizOutcomeInfoMap[playerName] ?: return PlayerGetQuizOutcomeResult.Fail
         val score = scoreMap[playerName] ?: return PlayerGetQuizOutcomeResult.Fail
