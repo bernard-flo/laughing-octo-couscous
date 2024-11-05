@@ -70,6 +70,8 @@ private val PresenterMoreGameComponent = FC<PresenterMoreGameComponentProps> { p
         sx {
             display = Display.flex
             flexDirection = FlexDirection.column
+            paddingLeft = 20.px
+            paddingRight = 20.px
         }
 
         for (groupItem in props.groupLeaderboard) {
@@ -80,6 +82,7 @@ private val PresenterMoreGameComponent = FC<PresenterMoreGameComponentProps> { p
             Box {
                 sx {
                     display = Display.flex
+                    marginTop = 40.px
                 }
 
                 if (rankValue == 1) {
@@ -105,7 +108,7 @@ private val PresenterMoreGameComponent = FC<PresenterMoreGameComponentProps> { p
                     val playerNameValue = playerItem.playerName.value
                     val playerScoreValue = playerItem.score.value
 
-                    +"${playerNameValue}(${playerScoreValue}점)"
+                    +"${playerNameValue}(${playerScoreValue}점) "
                 }
             }
         }
