@@ -200,7 +200,9 @@ data class Quiz(
 
     fun checkAnswer(playerAnswer: Answer, earlyPlayerOrder: Int): QuizOutcomeInfo {
 
-        val matchedAnswerInfo = answerInfoList.find { it.answer == playerAnswer }
+        val trimmedInput = playerAnswer.value.replace(invalidRegex, "").trim()
+
+        val matchedAnswerInfo = answerInfoList.find { it.answer.value == trimmedInput }
         return if (matchedAnswerInfo != null) {
             if (matchedAnswerInfo.minusPoint.isZero()) {
                 if (earlyPlayerOrder < earlyPlayerCount.value) {
@@ -217,6 +219,8 @@ data class Quiz(
     }
 
 }
+
+private val invalidRegex = Regex("[^가-힣0-9]")
 
 data class EarlyPlayerCount(
     val value: Int,
