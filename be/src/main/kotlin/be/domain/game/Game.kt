@@ -1,5 +1,6 @@
 package be.domain.game
 
+import be.service.LoadPlayerService
 import be.service.LoadQuizService
 import be.service.ScoreMapBackupService
 import org.springframework.stereotype.Service
@@ -21,9 +22,11 @@ import shared.domain.player.PlayerName
 class Game(
     private val scoreMapBackupService: ScoreMapBackupService,
     loadQuizService: LoadQuizService,
+    loadPlayerService: LoadPlayerService,
 ) {
 
     private val quizList: List<Quiz> = loadQuizService.loadQuizList()
+    private val playerNameList = loadPlayerService.playerInfoList.map { it.playerName }
 
     private val scoreMap = mutableMapOf<PlayerName, Score>()
     private val leaderboard = mutableListOf<LeaderboardItem>()
@@ -34,10 +37,15 @@ class Game(
     private var currentQuizIndex = QuizIndex(0)
 
     init {
-        scoreMapBackupService.restoreScoreMap()?.let {
-            scoreMap.putAll(it)
-            updateLeaderboard()
+        val restoredScoreMap = scoreMapBackupService.restoreScoreMap()
+        if (restoredScoreMap != null) {
+            scoreMap.putAll(restoredScoreMap)
+        } else {
+            playerNameList.forEach {
+                scoreMap[it] = Score(0)
+            }
         }
+        updateLeaderboard()
     }
 
     fun getGameStateInfo(): GameStateInfo = synchronized(this) {
